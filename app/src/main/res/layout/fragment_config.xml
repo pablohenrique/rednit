@@ -1,0 +1,60 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.rednit.app.ConfigFragment"
+             android:background="@color/white">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/hello_blank_fragment"/>
+
+    <GridLayout
+            android:layout_width="wrap_content"
+            android:layout_height="110dp"
+            android:gravity="center|center_vertical"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="250dp">
+
+        <Button
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:text="g+"
+                android:textSize="40sp"
+                android:textColor="@color/black"
+                android:textAllCaps="false"
+                android:background="@drawable/circular_stroked_button_selector"
+                android:layout_row="0"
+                android:layout_column="0"/>
+        <Button
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:text="f"
+                android:textSize="40sp"
+                android:textColor="@color/black"
+                android:textAllCaps="false"
+                android:background="@drawable/circular_stroked_button_selector"
+                android:layout_row="0"
+                android:layout_column="1"/>
+        <Button
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:text="t"
+                android:textSize="40sp"
+                android:textColor="@color/black"
+                android:textAllCaps="false"
+                android:background="@drawable/circular_stroked_button_selector"
+                android:layout_row="0"
+                android:layout_column="2"/>
+
+    </GridLayout>
+
+</FrameLayout>

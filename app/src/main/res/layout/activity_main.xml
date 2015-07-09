@@ -1,0 +1,69 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                tools:context=".MainActivity"
+                android:background="@mipmap/background">
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="rednit"
+            android:textSize="100dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="35dp"
+            android:textColor="@color/white"
+            android:gravity="center|center_horizontal"/>
+
+    <GridLayout
+            android:layout_width="wrap_content"
+            android:layout_height="110dp"
+            android:gravity="center|center_vertical"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="250dp">
+
+        <Button
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:text="g+"
+                android:textSize="40sp"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:background="@drawable/circular_stroked_button_selector"
+                android:layout_row="0"
+                android:layout_column="0"/>
+        <Button
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:text="f"
+                android:textSize="40sp"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:background="@drawable/circular_stroked_button_selector"
+                android:layout_row="0"
+                android:layout_column="1"/>
+        <Button
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:text="t"
+                android:textSize="40sp"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:background="@drawable/circular_stroked_button_selector"
+                android:layout_row="0"
+                android:layout_column="2"/>
+
+    </GridLayout>
+
+
+</FrameLayout>
