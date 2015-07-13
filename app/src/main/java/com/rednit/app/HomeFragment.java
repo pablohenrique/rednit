@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 
 /**
@@ -28,6 +29,8 @@ public class HomeFragment extends Fragment {
 //    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    private View rootView;
 
     /**
      * Use this factory method to create a new instance of
@@ -64,7 +67,8 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        rootView = inflater.inflate(R.layout.fragment_home, container, false);
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

@@ -2,22 +2,32 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="fill_parent"
              android:layout_height="fill_parent"
-             tools:context="com.rednit.app.ConfigFragment"
+             tools:context="com.rednit.app.ResultListFragment"
              android:clickable="true"
              android:background="@color/white">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/hello_blank_fragment"/>
+    <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:background="@color/blue">
+
+        <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:padding="15dp"
+                android:text="Results"
+                android:textSize="20sp"
+                android:textColor="@color/white"/>
+    </LinearLayout>
+
 
     <GridLayout
             android:layout_width="wrap_content"
-            android:layout_height="110dp"
+            android:layout_height="wrap_content"
             android:gravity="center|center_vertical"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="250dp">
+            android:layout_marginTop="60dp">
 
         <Button
                 android:layout_width="100dp"
@@ -31,6 +41,7 @@
                 android:background="@drawable/circular_stroked_button_selector"
                 android:layout_row="0"
                 android:layout_column="0"/>
+
         <Button
                 android:layout_width="100dp"
                 android:layout_height="100dp"
@@ -56,6 +67,39 @@
                 android:layout_row="0"
                 android:layout_column="2"/>
 
+        <ImageView
+                android:layout_height="50dp"
+                android:layout_width="50dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_action_settings"
+                android:layout_row="1"
+                android:layout_column="0"/>
+
+        <ImageView
+                android:layout_height="50dp"
+                android:layout_width="50dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_action_settings"
+                android:layout_row="1"
+                android:layout_column="1"/>
+
+        <ImageView
+                android:layout_height="50dp"
+                android:layout_width="50dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_action_settings"
+                android:layout_row="1"
+                android:layout_column="2"/>
+
     </GridLayout>
+
+    <ListView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+    </ListView>
 
 </FrameLayout>

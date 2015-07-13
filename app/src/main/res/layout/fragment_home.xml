@@ -7,15 +7,71 @@
              tools:context="com.rednit.app.HomeFragment">
 
     <!-- TODO: Update blank fragment layout -->
+
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:src="@drawable/ic_action_settings"
+            android:layout_gravity="top|left"/>
+
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_marginTop="50dp"
+            android:src="@drawable/ic_action_chat"
+            android:layout_gravity="top|left"/>
+
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_marginTop="100dp"
+            android:src="@drawable/ic_action_help"
+            android:layout_gravity="top|left"/>
+
+
+    <ImageView
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_marginTop="-40dp"
+            android:background="@drawable/circular_stroked_home_profile_filled_large"
+            android:layout_gravity="center|center_horizontal"/>
+
     <ImageView
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:background="@drawable/circular_stroked_home_profile_filled"/>
+            android:layout_marginTop="-40dp"
+            android:background="@drawable/circular_stroked_home_profile_filled_medium"
+            android:layout_gravity="center|center_horizontal"/>
+
+    <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="-40dp"
+            android:background="@drawable/circular_stroked_home_profile_filled"
+            android:layout_gravity="center|center_horizontal"/>
+
     <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="115dp"
             android:textSize="30sp"
             android:textColor="@color/grey2"
-            android:text="@string/home_searching"/>
+            android:text="@string/home_searching_stage_1"
+            android:layout_gravity="center|center_horizontal"/>
+
+    <LinearLayout
+            android:id="@+id/layout_result_list"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginTop="420dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:visibility="visible">
+
+        <include layout="@layout/fragment_result_list"/>
+
+    </LinearLayout>
 
 </FrameLayout>

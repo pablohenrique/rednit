@@ -9,4 +9,8 @@
     <color name="grey">#CCCCCC</color>
     <color name="grey2">#B6B6B6</color>
 
+    <color name="blue_profile_small">#2597e0</color>
+    <color name="blue_profile_medium">#8fcaef</color>
+    <color name="blue_profile_large">#c8e5f7</color>
+
 </resources>

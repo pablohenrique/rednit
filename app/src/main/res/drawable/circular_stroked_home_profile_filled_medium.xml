@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
 
-    <size android:height="250dp" android:width="250dp"/>
+    <size android:height="300dp" android:width="300dp"/>
     <!--<solid android:color="@color/white_transparent" />-->
 
     <stroke
-            android:width="10dp"
-            android:color="@color/blue_profile_small" />
+            android:width="25dp"
+            android:color="@color/blue_profile_medium" />
 
     <corners
             android:bottomLeftRadius="100dp"

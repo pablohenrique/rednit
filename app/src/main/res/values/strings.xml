@@ -6,7 +6,10 @@
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="home_searching">searching...</string>
+    <string name="home_searching_stage_1">searching</string>
+    <string name="home_searching_stage_2">searching.</string>
+    <string name="home_searching_stage_3">searching..</string>
+    <string name="home_searching_stage_4">searching...</string>
 
     <string name="core_facebook_app_id">731261337003089</string>
 </resources>
