@@ -17,6 +17,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.rednit.app.Util.Util;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -44,6 +46,8 @@ public class MainActivity extends ActionBarActivity
     private static final int RC_SIGN_IN = 0;
     private boolean mSignInClicked;
     private boolean mIntentInProgress;
+
+    private String likedPages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,11 +209,11 @@ public class MainActivity extends ActionBarActivity
             }
         } else {
 
-            Profile profile = Profile.getCurrentProfile();
+            final Profile profile = Profile.getCurrentProfile();
             System.out.println(profile.getId());
 //            callLoginLoadingScreen();
 
-            /* make the API call */
+//            /* make the API call */
             new GraphRequest(
                     AccessToken.getCurrentAccessToken(),
                     "/" + profile.getId() + "/likes",
@@ -217,11 +221,23 @@ public class MainActivity extends ActionBarActivity
                     HttpMethod.GET,
                     new GraphRequest.Callback() {
                         public void onCompleted(GraphResponse response) {
-                            if(response != null)
-                                System.out.println(response.toString());
+                            if(response != null) {
+                                try {
+                                    JSONObject json = response.getJSONObject();
+                                    System.out.println(json.toString());
+                                    JSONArray data = json.getJSONArray("data");
+                                    setLikedPages(data.toString());
+                                    extractLikes(profile.getId(), json.getJSONObject("paging").getJSONObject("cursors").getString("after"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
                     }
             ).executeAsync();
+
+
+
 //
 //            Bundle parameters = new Bundle();
 //            parameters.putString("fields", "id,name,link");
@@ -243,6 +259,54 @@ public class MainActivity extends ActionBarActivity
         }
 
 
+    }
+
+    public void extractLikes(final String profile, String after){
+        Bundle params = new Bundle();
+        params.putString("after", after);
+        new GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/" + profile + "/likes",
+                params,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse graphResponse) {
+                        JSONObject jsonObject = graphResponse.getJSONObject();
+                        try {
+                            JSONArray jsonArray = jsonObject.getJSONArray("data");
+                            setLikedPages(jsonArray.toString());
+                            if(!jsonObject.isNull("paging")) {
+                                JSONObject paging = jsonObject.getJSONObject("paging");
+                                JSONObject cursors = paging.getJSONObject("cursors");
+                                if (!cursors.isNull("after"))
+                                    extractLikes(profile, cursors.getString("after"));
+//                                    afterString[0] = cursors.getString("after");
+                                else {
+                                    System.out.println(getLikedPages());
+                                    return;
+                                }
+//                                    noData[0] = true;
+                            }
+                            else {
+                                System.out.println(getLikedPages());
+                                return;
+                            }
+//                                noData[0] = true;
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+        ).executeAndWait();
+    }
+
+    public void setLikedPages(String t){
+        this.likedPages += t;
+    }
+
+    public String getLikedPages(){
+        return this.likedPages;
     }
 
     public static void facebookLogOut() {
