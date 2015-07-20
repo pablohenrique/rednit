@@ -33,7 +33,7 @@ public class MainActivity extends ActionBarActivity
     private Util utils;
 
     /*FACEBOOK VARIABLES*/
-    private List<String> permissions = Arrays.asList("public_profile", "email", "basic_info");
+    private List<String> permissions = Arrays.asList("public_profile", "email", "user_likes");
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
     private ProfileTracker profileTracker;
@@ -65,7 +65,7 @@ public class MainActivity extends ActionBarActivity
                 .addApi(Plus.API, Plus.PlusOptions.builder().build())
                 .addScope(Plus.SCOPE_PLUS_LOGIN).build();
 
-        facebookLogOut();
+//        facebookLogOut();
         googleLogOut();
 
         this.facebookSetup();
@@ -172,8 +172,9 @@ public class MainActivity extends ActionBarActivity
 
     private void facebookSetup(){
         loginButton = (LoginButton) findViewById(R.id.main_btn_facebook);
-        if(AccessToken.getCurrentAccessToken() == null) {
+        AccessToken.refreshCurrentAccessTokenAsync();
 
+        if(AccessToken.getCurrentAccessToken() == null) {
             if(!utils.checkConnection(MainActivity.this)) {
                 loginButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -202,10 +203,16 @@ public class MainActivity extends ActionBarActivity
                     }
                 });
             }
+        } else {
 
+            Profile profile = Profile.getCurrentProfile();
+            System.out.println(profile.getId());
+//            callLoginLoadingScreen();
+
+            /* make the API call */
             new GraphRequest(
                     AccessToken.getCurrentAccessToken(),
-                    "/me",
+                    "/" + profile.getId() + "/likes",
                     null,
                     HttpMethod.GET,
                     new GraphRequest.Callback() {
@@ -215,12 +222,26 @@ public class MainActivity extends ActionBarActivity
                         }
                     }
             ).executeAsync();
-
-        } else {
-            Profile profile = Profile.getCurrentProfile();
-            System.out.println(profile.getId());
-            callLoginLoadingScreen();
+//
+//            Bundle parameters = new Bundle();
+//            parameters.putString("fields", "id,name,link");
+//
+//            GraphRequest graphRequest = new GraphRequest(
+//                    AccessToken.getCurrentAccessToken(),
+//                    profile.getId(),
+//                    null,
+//                    HttpMethod.GET,
+//                    new GraphRequest.Callback() {
+//                        public void onCompleted(GraphResponse response) {
+//                            if(response != null)
+//                                System.out.println(response.toString());
+//                        }
+//                    }
+//            );
+//            graphRequest.setParameters(parameters);
+//            graphRequest.executeAsync();
         }
+
 
     }
 
