@@ -278,6 +278,7 @@ HomeFragment.OnFragmentInteractionListener{
                     setLikedPages(jsonArray.toString());
                     if(!jsonObject.isNull("paging")) {
                         JSONObject paging = jsonObject.getJSONObject("paging");
+                        putDataToServer(paging);
                         JSONObject cursors = paging.getJSONObject("cursors");
                         if (!cursors.isNull("after"))
                             extractLikes(profile, cursors.getString("after"));
