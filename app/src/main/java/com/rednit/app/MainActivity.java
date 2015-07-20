@@ -17,6 +17,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.rednit.app.Util.Util;
+import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.List;
@@ -63,6 +64,9 @@ public class MainActivity extends ActionBarActivity
                 .addOnConnectionFailedListener(this)
                 .addApi(Plus.API, Plus.PlusOptions.builder().build())
                 .addScope(Plus.SCOPE_PLUS_LOGIN).build();
+
+        facebookLogOut();
+        googleLogOut();
 
         this.facebookSetup();
     }
@@ -169,6 +173,7 @@ public class MainActivity extends ActionBarActivity
     private void facebookSetup(){
         loginButton = (LoginButton) findViewById(R.id.main_btn_facebook);
         if(AccessToken.getCurrentAccessToken() == null) {
+
             if(!utils.checkConnection(MainActivity.this)) {
                 loginButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -197,6 +202,20 @@ public class MainActivity extends ActionBarActivity
                     }
                 });
             }
+
+            new GraphRequest(
+                    AccessToken.getCurrentAccessToken(),
+                    "/me",
+                    null,
+                    HttpMethod.GET,
+                    new GraphRequest.Callback() {
+                        public void onCompleted(GraphResponse response) {
+                            if(response != null)
+                                System.out.println(response.toString());
+                        }
+                    }
+            ).executeAsync();
+
         } else {
             Profile profile = Profile.getCurrentProfile();
             System.out.println(profile.getId());
