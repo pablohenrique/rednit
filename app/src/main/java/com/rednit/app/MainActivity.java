@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.StrictMode;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,12 +17,26 @@ import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
+import com.rednit.app.Util.FiwareContextJson;
 import com.rednit.app.Util.Util;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.SocketException;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -31,7 +46,7 @@ GoogleApiClient.ConnectionCallbacks,
 GoogleApiClient.OnConnectionFailedListener,
 ResultListFragment.OnFragmentInteractionListener,
 HomeFragment.OnFragmentInteractionListener{
-    
+
     private Util utils;
     
     /*FACEBOOK VARIABLES*/
@@ -209,32 +224,34 @@ HomeFragment.OnFragmentInteractionListener{
             }
         } else {
             
-            final Profile profile = Profile.getCurrentProfile();
-            System.out.println(profile.getId());
-            //            callLoginLoadingScreen();
-            
-            //            /* make the API call */
-            new GraphRequest(
-                             AccessToken.getCurrentAccessToken(),
-                             "/" + profile.getId() + "/likes",
-                             null,
-                             HttpMethod.GET,
-                             new GraphRequest.Callback() {
-                public void onCompleted(GraphResponse response) {
-                    if(response != null) {
-                        try {
-                            JSONObject json = response.getJSONObject();
-                            System.out.println(json.toString());
-                            JSONArray data = json.getJSONArray("data");
-                            setLikedPages(data.toString());
-                            extractLikes(profile.getId(), json.getJSONObject("paging").getJSONObject("cursors").getString("after"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-                             ).executeAsync();
+            Profile profile = Profile.getCurrentProfile();
+//            System.out.println(profile.getId());
+//            //            callLoginLoadingScreen();
+//
+//            //            /* make the API call */
+//            new GraphRequest(
+//                             AccessToken.getCurrentAccessToken(),
+//                             "/" + profile.getId() + "/likes",
+//                             null,
+//                             HttpMethod.GET,
+//                             new GraphRequest.Callback() {
+//                public void onCompleted(GraphResponse response) {
+//                    if(response != null) {
+//                        try {
+//                            JSONObject json = response.getJSONObject();
+//                            System.out.println(json.toString());
+//                            JSONArray data = json.getJSONArray("data");
+//                            setLikedPages(data.toString());
+//                            extractLikes(profile.getId(), json.getJSONObject("paging").getJSONObject("cursors").getString("after"));
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+//            }
+//                             ).executeAsync();
+
+            extractLikes(profile.getId(), "");
             
             
             
@@ -264,6 +281,8 @@ HomeFragment.OnFragmentInteractionListener{
     public void extractLikes(final String profile, String after){
         Bundle params = new Bundle();
         params.putString("after", after);
+//        params.putString("limit", "1000");
+//        params.putInt("limit", 1000);
         new GraphRequest(
                          AccessToken.getCurrentAccessToken(),
                          "/" + profile + "/likes",
@@ -278,7 +297,11 @@ HomeFragment.OnFragmentInteractionListener{
                     setLikedPages(jsonArray.toString());
                     if(!jsonObject.isNull("paging")) {
                         JSONObject paging = jsonObject.getJSONObject("paging");
-                        putDataToServer(paging);
+
+//                        putDataToServer(paging);
+
+                        putDataToServer(new FiwareContextJson(profile).extractPages(jsonArray).toJSON());
+
                         JSONObject cursors = paging.getJSONObject("cursors");
                         if (!cursors.isNull("after"))
                             extractLikes(profile, cursors.getString("after"));
@@ -296,6 +319,8 @@ HomeFragment.OnFragmentInteractionListener{
                     //                                noData[0] = true;
                 } catch (JSONException e) {
                     e.printStackTrace();
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
                 }
             }
         }
@@ -304,6 +329,9 @@ HomeFragment.OnFragmentInteractionListener{
     
     public  String putDataToServer(JSONObject returnedJObject) throws Throwable
     {
+        System.out.println("|");
+        System.out.println(returnedJObject.toString());
+        System.out.println("|");
         String url = "http://192.168.1.28:1026/ngsi10/updateContext";
         HttpPost request = new HttpPost(url);
         JSONStringer json = new JSONStringer();
@@ -319,7 +347,7 @@ HomeFragment.OnFragmentInteractionListener{
             {
                 String k=itKeys.next();
                 json.key(k).value(returnedJObject.get(k));
-                Log.e("keys "+k,"value "+returnedJObject.get(k).toString());
+                Log.e("keys " + k, "value " + returnedJObject.get(k).toString());
             }
         }
         json.endObject();
@@ -334,8 +362,8 @@ HomeFragment.OnFragmentInteractionListener{
         HttpResponse response =null;
         DefaultHttpClient httpClient = new DefaultHttpClient();
         
-        HttpConnectionParams.setSoTimeout(httpClient.getParams(), Constants.ANDROID_CONNECTION_TIMEOUT*1000);
-        HttpConnectionParams.setConnectionTimeout(httpClient.getParams(),Constants.ANDROID_CONNECTION_TIMEOUT*1000);
+//        HttpConnectionParams.setSoTimeout(httpClient.getParams(), Constants.ANDROID_CONNECTION_TIMEOUT * 1000);
+//        HttpConnectionParams.setConnectionTimeout(httpClient.getParams(),Constants.ANDROID_CONNECTION_TIMEOUT*1000);
         try{
             
             response = httpClient.execute(request);
