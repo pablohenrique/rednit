@@ -332,7 +332,7 @@ HomeFragment.OnFragmentInteractionListener{
         System.out.println("|");
         System.out.println(returnedJObject.toString());
         System.out.println("|");
-        String url = "http://192.168.1.28:1026/ngsi10/updateContext";
+        String url = "http://45.55.148.217:1026/ngsi10/updateContext";
         HttpPost request = new HttpPost(url);
         JSONStringer json = new JSONStringer();
         StringBuilder sb=new StringBuilder();
