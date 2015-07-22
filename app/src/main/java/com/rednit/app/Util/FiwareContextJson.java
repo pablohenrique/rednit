@@ -24,12 +24,41 @@ public class FiwareContextJson {
     public FiwareContextJson extractPages(JSONArray array) throws JSONException {
         for(int i = 0; i < array.length(); i++) {
             JSONObject aux = new JSONObject();
-            aux.put("name", "like");
-            aux.put("type", "string");
             aux.put("value", array.getJSONObject(i).getString("name"));
+            aux.put("type", "string");
+            aux.put("name", "like");
             getAttributes().put(aux);
         }
         return this;
+    }
+
+    public JSONObject locationJson(double lat, double lon) throws JSONException {
+        JSONArray array = new JSONArray();
+        JSONObject context = new JSONObject();
+        JSONArray contextArray = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", getId());
+        jsonObject.put("isPattern", getIsPattern());
+        jsonObject.put("type", getType());
+
+
+        contextArray.put(jsonObject);
+        jsonObject.put("attributes", getAttributes());
+        context.put(getContext(), contextArray);
+        context.put("updateAction", "APPEND");
+        JSONObject latJson = new JSONObject();
+        latJson.put("value", lat);
+        latJson.put("type", "Number");
+        latJson.put("name", "Latitude");
+        array.put(latJson);
+        //getAttributes().put(lat);
+        JSONObject lonJson = new JSONObject();
+        lonJson.put("value", lon);
+        lonJson.put("type", "Number");
+        lonJson.put("name", "Longitude");
+        array.put(lonJson);
+        getAttributes().put(array);
+        return context;
     }
 
     public String getType() {
@@ -69,9 +98,9 @@ public class FiwareContextJson {
         JSONArray contextArray = new JSONArray();
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("type", getType());
-        jsonObject.put("isPattern", getIsPattern());
         jsonObject.put("id", getId());
+        jsonObject.put("isPattern", getIsPattern());
+        jsonObject.put("type", getType());
         jsonObject.put("attributes", getAttributes());
 
         contextArray.put(jsonObject);

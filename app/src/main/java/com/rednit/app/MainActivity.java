@@ -41,61 +41,63 @@ import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity
-implements View.OnClickListener,
-GoogleApiClient.ConnectionCallbacks,
-GoogleApiClient.OnConnectionFailedListener,
-ResultListFragment.OnFragmentInteractionListener,
-HomeFragment.OnFragmentInteractionListener{
+        implements View.OnClickListener,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        ResultListFragment.OnFragmentInteractionListener,
+        HomeFragment.OnFragmentInteractionListener{
 
     private Util utils;
-    
+
     /*FACEBOOK VARIABLES*/
     private List<String> permissions = Arrays.asList("public_profile", "email", "user_likes");
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
     private ProfileTracker profileTracker;
     private LoginButton loginButton;
-    
+
     /*GOOGLE VARIABLES*/
     private static GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 0;
     private boolean mSignInClicked;
     private boolean mIntentInProgress;
-    
+
     private String likedPages;
-    
+    GPSTracker gps;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(this.getApplicationContext());
-        
+
         setContentView(R.layout.activity_main);
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
-        
         callbackManager = CallbackManager.Factory.create();
-        
+
         utils = new Util();
         //        this.createDefaults();
-        
+
         findViewById(R.id.main_btn_google).setOnClickListener(this);
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-        .addConnectionCallbacks(this)
-        .addOnConnectionFailedListener(this)
-        .addApi(Plus.API, Plus.PlusOptions.builder().build())
-        .addScope(Plus.SCOPE_PLUS_LOGIN).build();
-        
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Plus.API, Plus.PlusOptions.builder().build())
+                .addScope(Plus.SCOPE_PLUS_LOGIN).build();
+
         //        facebookLogOut();
         googleLogOut();
-        
+
         this.facebookSetup();
+
     }
-    
+
     @Override
     public void onResume(){
         super.onResume();
         //        loadingTextView.setText(R.string.main_txt_loading);
     }
-    
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -114,7 +116,7 @@ HomeFragment.OnFragmentInteractionListener{
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
-    
+
     //Google
     @Override
     public void onConnectionFailed(ConnectionResult result) {
@@ -134,45 +136,45 @@ HomeFragment.OnFragmentInteractionListener{
             }
         }
     }
-    
+
     //Google
     @Override
     public void onConnected(Bundle connectionHint) {
         mSignInClicked = false;
         callLoginLoadingScreen();
     }
-    
+
     public void onDisconnected() {
-        
+
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-        
+
         return super.onOptionsItemSelected(item);
     }
-    
+
     @Override
     public void onConnectionSuspended(int i) {
-        
+
     }
-    
+
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.main_btn_google && !mGoogleApiClient.isConnecting()) {
@@ -188,11 +190,11 @@ HomeFragment.OnFragmentInteractionListener{
             }
         }
     }
-    
+
     private void facebookSetup(){
         loginButton = (LoginButton) findViewById(R.id.main_btn_facebook);
         AccessToken.refreshCurrentAccessTokenAsync();
-        
+
         if(AccessToken.getCurrentAccessToken() == null) {
             if(!utils.checkConnection(MainActivity.this)) {
                 loginButton.setOnClickListener(new View.OnClickListener() {
@@ -209,13 +211,13 @@ HomeFragment.OnFragmentInteractionListener{
                         callLoginLoadingScreen();
                         System.out.println("Facebook Success");
                     }
-                    
+
                     @Override
                     public void onCancel() {
                         System.out.println("Facebook Cancel");
                         AccessToken.refreshCurrentAccessTokenAsync();
                     }
-                    
+
                     @Override
                     public void onError(FacebookException exception) {
                         System.out.println("Facebook Error");
@@ -223,7 +225,7 @@ HomeFragment.OnFragmentInteractionListener{
                 });
             }
         } else {
-            
+
             Profile profile = Profile.getCurrentProfile();
 //            System.out.println(profile.getId());
 //            //            callLoginLoadingScreen();
@@ -252,9 +254,32 @@ HomeFragment.OnFragmentInteractionListener{
 //                             ).executeAsync();
 
             extractLikes(profile.getId(), "");
-            
-            
-            
+            gps = new GPSTracker(MainActivity.this);
+
+
+
+
+
+            if(gps.canGetLocation()){
+
+                double latitude = gps.getLatitude();
+                double longitude = gps.getLongitude();
+                try {
+                    putDataToServer(new FiwareContextJson(profile.getId()).locationJson(latitude, longitude));
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
+                }
+
+                // \n is for new line
+                //Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+            }else{
+                // can't get location
+                // GPS or Network is not enabled
+                // Ask user to enable GPS/network in settings
+                gps.showSettingsAlert();
+            }
+
+
             //
             //            Bundle parameters = new Bundle();
             //            parameters.putString("fields", "id,name,link");
@@ -274,59 +299,59 @@ HomeFragment.OnFragmentInteractionListener{
             //            graphRequest.setParameters(parameters);
             //            graphRequest.executeAsync();
         }
-        
-        
+
+
     }
-    
+
     public void extractLikes(final String profile, String after){
         Bundle params = new Bundle();
         params.putString("after", after);
 //        params.putString("limit", "1000");
 //        params.putInt("limit", 1000);
         new GraphRequest(
-                         AccessToken.getCurrentAccessToken(),
-                         "/" + profile + "/likes",
-                         params,
-                         HttpMethod.GET,
-                         new GraphRequest.Callback() {
-            @Override
-            public void onCompleted(GraphResponse graphResponse) {
-                JSONObject jsonObject = graphResponse.getJSONObject();
-                try {
-                    JSONArray jsonArray = jsonObject.getJSONArray("data");
-                    setLikedPages(jsonArray.toString());
-                    if(!jsonObject.isNull("paging")) {
-                        JSONObject paging = jsonObject.getJSONObject("paging");
+                AccessToken.getCurrentAccessToken(),
+                "/" + profile + "/likes",
+                params,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse graphResponse) {
+                        JSONObject jsonObject = graphResponse.getJSONObject();
+                        try {
+                            JSONArray jsonArray = jsonObject.getJSONArray("data");
+                            setLikedPages(jsonArray.toString());
+                            if(!jsonObject.isNull("paging")) {
+                                JSONObject paging = jsonObject.getJSONObject("paging");
 
 //                        putDataToServer(paging);
 
-                        putDataToServer(new FiwareContextJson(profile).extractPages(jsonArray).toJSON());
+                                putDataToServer(new FiwareContextJson(profile).extractPages(jsonArray).toJSON());
 
-                        JSONObject cursors = paging.getJSONObject("cursors");
-                        if (!cursors.isNull("after"))
-                            extractLikes(profile, cursors.getString("after"));
-                        //                                    afterString[0] = cursors.getString("after");
-                        else {
-                            System.out.println(getLikedPages());
-                            return;
+                                JSONObject cursors = paging.getJSONObject("cursors");
+                                if (!cursors.isNull("after"))
+                                    extractLikes(profile, cursors.getString("after"));
+                                    //                                    afterString[0] = cursors.getString("after");
+                                else {
+                                    System.out.println(getLikedPages());
+                                    return;
+                                }
+                                //                                    noData[0] = true;
+                            }
+                            else {
+                                System.out.println(getLikedPages());
+                                return;
+                            }
+                            //                                noData[0] = true;
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (Throwable throwable) {
+                            throwable.printStackTrace();
                         }
-                        //                                    noData[0] = true;
                     }
-                    else {
-                        System.out.println(getLikedPages());
-                        return;
-                    }
-                    //                                noData[0] = true;
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
                 }
-            }
-        }
-                         ).executeAndWait();
+        ).executeAndWait();
     }
-    
+
     public  String putDataToServer(JSONObject returnedJObject) throws Throwable
     {
         System.out.println("|");
@@ -336,8 +361,8 @@ HomeFragment.OnFragmentInteractionListener{
         HttpPost request = new HttpPost(url);
         JSONStringer json = new JSONStringer();
         StringBuilder sb=new StringBuilder();
-        
-        
+
+
         if (returnedJObject!=null)
         {
             Iterator<String> itKeys = returnedJObject.keys();
@@ -351,21 +376,21 @@ HomeFragment.OnFragmentInteractionListener{
             }
         }
         json.endObject();
-        
-        
+
+
         StringEntity entity = new StringEntity(json.toString());
         entity.setContentType("application/json;charset=UTF-8");
         entity.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,"application/json;charset=UTF-8"));
         request.setHeader("Accept", "application/json");
         request.setEntity(entity);
-        
+
         HttpResponse response =null;
         DefaultHttpClient httpClient = new DefaultHttpClient();
-        
+
 //        HttpConnectionParams.setSoTimeout(httpClient.getParams(), Constants.ANDROID_CONNECTION_TIMEOUT * 1000);
 //        HttpConnectionParams.setConnectionTimeout(httpClient.getParams(),Constants.ANDROID_CONNECTION_TIMEOUT*1000);
         try{
-            
+
             response = httpClient.execute(request);
         }
         catch(SocketException se)
@@ -373,34 +398,34 @@ HomeFragment.OnFragmentInteractionListener{
             Log.e("SocketException", se+"");
             throw se;
         }
-        
-        
-        
-        
+
+
+
+
         InputStream in = response.getEntity().getContent();
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String line = null;
         while((line = reader.readLine()) != null){
             sb.append(line);
-            
+
         }
-        
+
         return sb.toString();
     }
-    
+
     public void setLikedPages(String t){
         this.likedPages += t;
     }
-    
+
     public String getLikedPages(){
         return this.likedPages;
     }
-    
+
     public static void facebookLogOut() {
         AccessToken.setCurrentAccessToken(null);
         Profile.setCurrentProfile(null);
     }
-    
+
     public static void googleLogOut(){
         if (mGoogleApiClient.isConnected()) {
             Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
@@ -408,26 +433,26 @@ HomeFragment.OnFragmentInteractionListener{
             mGoogleApiClient.connect();
         }
     }
-    
+
     public static boolean facebookIsConnected(){
         return (AccessToken.getCurrentAccessToken() != null);
     }
-    
+
     public static boolean googleIsConnected() { return mGoogleApiClient.isConnected(); }
-    
+
     public static boolean hasSocialConnection(){ return (facebookIsConnected() || googleIsConnected()); }
-    
+
     public static String whitchIsConnected(){ return facebookIsConnected() ? "facebook" : "google";}
-    
+
     private void callLoginLoadingScreen(){
         getSupportFragmentManager()
-        .beginTransaction()
-        .add(R.id.fragment_container, new HomeFragment())
-        .commit();
+                .beginTransaction()
+                .add(R.id.fragment_container, new HomeFragment())
+                .commit();
     }
-    
+
     @Override
     public void onFragmentInteraction(Uri uri) {
-        
+
     }
 }
