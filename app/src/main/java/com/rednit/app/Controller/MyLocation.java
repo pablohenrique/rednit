@@ -1,4 +1,4 @@
-package com.rednit.app;
+package com.rednit.app.Controller;
 
 import android.app.AlertDialog;
 import android.app.Service;
@@ -13,7 +13,7 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 
-public class GPSTracker extends Service implements LocationListener {
+public class MyLocation extends Service implements LocationListener {
 
     private final Context mContext;
 
@@ -39,7 +39,7 @@ public class GPSTracker extends Service implements LocationListener {
     // Declaring a Location Manager
     protected LocationManager locationManager;
 
-    public GPSTracker(Context context) {
+    public MyLocation(Context context) {
         this.mContext = context;
         getLocation();
     }
@@ -110,7 +110,7 @@ public class GPSTracker extends Service implements LocationListener {
      * */
     public void stopUsingGPS(){
         if(locationManager != null){
-            locationManager.removeUpdates(GPSTracker.this);
+            locationManager.removeUpdates(MyLocation.this);
         }
     }
 

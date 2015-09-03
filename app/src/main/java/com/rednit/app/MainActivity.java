@@ -17,14 +17,18 @@ import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
-import com.rednit.app.Util.FiwareContextJson;
+import com.raizlabs.android.dbflow.config.FlowManager;
+import com.rednit.app.Controller.MyLocation;
+import com.rednit.app.Model.FiwareContextJson;
 import com.rednit.app.Util.Util;
+import com.rednit.app.View.HomeFragment;
+import com.rednit.app.View.ResultListFragment;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,16 +67,17 @@ public class MainActivity extends ActionBarActivity
     private boolean mIntentInProgress;
 
     private String likedPages;
-    GPSTracker gps;
+    MyLocation gps;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(this.getApplicationContext());
-
         setContentView(R.layout.activity_main);
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
+        FlowManager.init(this);
+
         callbackManager = CallbackManager.Factory.create();
 
         utils = new Util();
@@ -254,7 +259,7 @@ public class MainActivity extends ActionBarActivity
 //                             ).executeAsync();
 
             extractLikes(profile.getId(), "");
-            gps = new GPSTracker(MainActivity.this);
+            gps = new MyLocation(MainActivity.this);
 
 
 

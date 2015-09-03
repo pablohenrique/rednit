@@ -1,21 +1,36 @@
-package com.rednit.app.Util;
+package com.rednit.app.Model;
+
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
+import com.rednit.app.DAO.RednitDatabase;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 /**
  * Created by pablohenrique on 7/20/15.
  */
-public class FiwareContextJson {
+@Table(databaseName = RednitDatabase.NAME)
+public class FiwareContextJson extends BaseModel {
 
-    private String context = "contextElements";
-    private String type = "User";
-    private boolean isPattern = false;
+    @Column
+    @PrimaryKey
     private String id;
+    @Column
+    private String context = "contextElements";
+    @Column
+    private String type = "User";
+    @Column
+    private String attr;
+    @Column
+    private boolean isPattern = false;
+
     private JSONArray attributes = new JSONArray();
+
+    public FiwareContextJson(){}
 
     public FiwareContextJson(String userId){
         setId(userId);
@@ -106,6 +121,9 @@ public class FiwareContextJson {
         contextArray.put(jsonObject);
         context.put(getContext(), contextArray);
         context.put("updateAction", "APPEND");
+
+        setAttr(context.toString());
+
         return context;
     }
 
@@ -115,5 +133,13 @@ public class FiwareContextJson {
 
     public void setContext(String context) {
         this.context = context;
+    }
+
+    public String getAttr() {
+        return attr;
+    }
+
+    public void setAttr(String attr) {
+        this.attr = attr;
     }
 }
