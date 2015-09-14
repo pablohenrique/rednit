@@ -16,7 +16,7 @@ repositories {
 
 android {
     compileSdkVersion 22
-    buildToolsVersion "21.1.2"
+    buildToolsVersion "22.0.1"
 
     defaultConfig {
         applicationId "com.rednit.app"
@@ -60,4 +60,5 @@ dependencies {
     apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
     compile 'com.raizlabs.android:DBFlow-Core:2.2.1'
     compile 'com.raizlabs.android:DBFlow:2.2.1'
+    compile 'com.github.nkzawa:socket.io-client:0.3.0'
 }
