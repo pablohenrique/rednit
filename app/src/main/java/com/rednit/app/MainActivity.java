@@ -3,15 +3,27 @@ package com.rednit.app;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.net.Uri;
-import android.os.StrictMode;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.os.StrictMode;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-import com.facebook.*;
+
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.facebook.Profile;
+import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.ConnectionResult;
@@ -170,6 +182,15 @@ public class MainActivity extends ActionBarActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }else{
+            if (id == R.id.action_logout) {
+                facebookLogOut();
+                Fragment fg = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                if(fg != null){
+                    getSupportFragmentManager().beginTransaction().
+                            remove(fg).commit();
+                }
+            }
         }
 
         return super.onOptionsItemSelected(item);
