@@ -35,6 +35,13 @@ import com.rednit.app.Model.FiwareContextJson;
 import com.rednit.app.Util.Util;
 import com.rednit.app.View.HomeFragment;
 import com.rednit.app.View.ResultListFragment;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -55,6 +62,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import io.fabric.sdk.android.Fabric;
+
 
 public class MainActivity extends ActionBarActivity
         implements View.OnClickListener,
@@ -63,7 +72,15 @@ public class MainActivity extends ActionBarActivity
         ResultListFragment.OnFragmentInteractionListener,
         HomeFragment.OnFragmentInteractionListener{
 
+    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+    private static final String TWITTER_KEY = "MEhrB2Z8cdbUP0P97vnrbFjZy";
+    private static final String TWITTER_SECRET = "ULgjeTVKOhAmpUh8zA9guMUU243kqTwj095TR2o6cZnNNeYGww";
+
+
     private Util utils;
+
+    /*TWITTER VARIABLES*/
+    private TwitterLoginButton twitterLoginButton;
 
     /*FACEBOOK VARIABLES*/
     private List<String> permissions = Arrays.asList("public_profile", "email", "user_likes");
@@ -85,6 +102,8 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this, new Twitter(authConfig));
         FacebookSdk.sdkInitialize(this.getApplicationContext());
         setContentView(R.layout.activity_main);
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
@@ -106,6 +125,21 @@ public class MainActivity extends ActionBarActivity
         googleLogOut();
 
         this.facebookSetup();
+
+
+        twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+        twitterLoginButton.setCallback(new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                // Do something with result, which provides a TwitterSession for making API calls
+                callLoginLoadingScreen();
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                // Do something on failure
+            }
+        });
 
     }
 
@@ -132,6 +166,9 @@ public class MainActivity extends ActionBarActivity
         else {
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
+
+        //Twitter
+        twitterLoginButton.onActivityResult(requestCode, resultCode, data);
     }
 
     //Google
@@ -183,17 +220,31 @@ public class MainActivity extends ActionBarActivity
         if (id == R.id.action_settings) {
             return true;
         }else{
-            if (id == R.id.action_logout) {
+            if (id == R.id.action_fb_logout) {
                 facebookLogOut();
                 Fragment fg = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
                 if(fg != null){
                     getSupportFragmentManager().beginTransaction().
                             remove(fg).commit();
                 }
+            }else{
+                if (id == R.id.action_twitter_logout) {
+                    twitterLogOut();
+                    Fragment fg = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                    if(fg != null){
+                        getSupportFragmentManager().beginTransaction().
+                                remove(fg).commit();
+                    }
+                }
             }
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void twitterLogOut() {
+        Twitter.getInstance();
+        Twitter.logOut();
     }
 
     @Override
