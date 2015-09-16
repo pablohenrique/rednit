@@ -38,10 +38,15 @@ import com.rednit.app.View.ResultListFragment;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterAuthToken;
+import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
+import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.services.FavoriteService;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -133,6 +138,36 @@ public class MainActivity extends ActionBarActivity
             public void success(Result<TwitterSession> result) {
                 // Do something with result, which provides a TwitterSession for making API calls
                 callLoginLoadingScreen();
+
+                TwitterSession session = Twitter.getSessionManager().getActiveSession();
+                TwitterAuthToken authToken = session.getAuthToken();
+                String token = authToken.token;
+                String secret = authToken.secret;
+                Log.i("TwitterToken", token);    //211736597-Jkr7pjIVsjzvwT8hEZewTlXT4Sck1HvfvUYfbTXh
+                Log.i("TwitterSecret", secret);  //qWnD6KgqoVrQ0NbuqFZev79bkhTHrjaX5r5g09Zt8Hfbc
+                Log.i("Id", String.valueOf(session.getId()));
+                Log.i("UserId", String.valueOf(session.getUserId()));
+                Log.i("Username", session.getUserName());
+
+                TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+                // Can also use Twitter directly: Twitter.getApiClient()
+                //Obtem os tweets favoritos!!
+                FavoriteService favoriteService =  twitterApiClient.getFavoriteService();
+                favoriteService.list(session.getUserId(), null, null, null, null, null, new Callback<List<Tweet>>() {
+                    @Override
+                    public void success(Result<List<Tweet>> result) {
+                        Log.i("Success2", "");
+                        List<Tweet> l = result.data;
+                        for(int i=0;i<l.size();i++){
+                            Log.i("Result:",l.get(i).text);
+                        }
+                    }
+                    @Override
+                    public void failure(TwitterException e) {
+                        Log.i("Failure2", "");
+                    }
+                });
+
             }
 
             @Override
@@ -140,6 +175,7 @@ public class MainActivity extends ActionBarActivity
                 // Do something on failure
             }
         });
+
 
     }
 
@@ -166,6 +202,7 @@ public class MainActivity extends ActionBarActivity
         else {
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
+
 
         //Twitter
         twitterLoginButton.onActivityResult(requestCode, resultCode, data);
@@ -243,6 +280,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     private void twitterLogOut() {
+        //https://twittercommunity.com/t/fabric-logout/29947/6
         Twitter.getInstance();
         Twitter.logOut();
     }
