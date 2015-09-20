@@ -32,21 +32,18 @@ import com.google.android.gms.plus.Plus;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.rednit.app.Controller.MyLocation;
 import com.rednit.app.Model.FiwareContextJson;
+import com.rednit.app.Util.MyTwitterApiClient;
 import com.rednit.app.Util.Util;
 import com.rednit.app.View.HomeFragment;
 import com.rednit.app.View.ResultListFragment;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterAuthToken;
-import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
-import com.twitter.sdk.android.core.models.Tweet;
-import com.twitter.sdk.android.core.services.FavoriteService;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -131,7 +128,9 @@ public class MainActivity extends ActionBarActivity
 
         this.facebookSetup();
 
-
+//        https://docs.fabric.io/android/twitter/access-rest-api.html
+//        https://dev.twitter.com/node/1180/twittercore
+//        https://developers.facebook.com/apps/731261337003089/settings/
         twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
         twitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override
@@ -149,6 +148,7 @@ public class MainActivity extends ActionBarActivity
                 Log.i("UserId", String.valueOf(session.getUserId()));
                 Log.i("Username", session.getUserName());
 
+                /*
                 TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
                 // Can also use Twitter directly: Twitter.getApiClient()
                 //Obtem os tweets favoritos!!
@@ -158,16 +158,33 @@ public class MainActivity extends ActionBarActivity
                     public void success(Result<List<Tweet>> result) {
                         Log.i("Success2", "");
                         List<Tweet> l = result.data;
-                        for(int i=0;i<l.size();i++){
-                            Log.i("Result:",l.get(i).text);
+                        for (int i = 0; i < l.size(); i++) {
+                            Log.i("Result:", l.get(i).text);
                         }
                     }
+
                     @Override
                     public void failure(TwitterException e) {
                         Log.i("Failure2", "");
                     }
-                });
+                });*/
 
+                MyTwitterApiClient client = new MyTwitterApiClient(session);
+                client.getFriendsService().idsByUserId(session.getUserId(), new Callback<MyTwitterApiClient.Ids>() {
+                    @Override
+                    public void success(Result<MyTwitterApiClient.Ids> result) {
+                        //success
+                        Log.i("Result3", "");
+                        result.data.printIds();
+                    }
+
+                    @Override
+                    public void failure(TwitterException exception) {
+                        //failure
+                        Log.i("Failure3", exception.getMessage());
+
+                    }
+                });
             }
 
             @Override
