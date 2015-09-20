@@ -44,6 +44,9 @@ import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
+import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.models.User;
+import com.twitter.sdk.android.core.services.FavoriteService;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -148,10 +151,12 @@ public class MainActivity extends ActionBarActivity
                 Log.i("UserId", String.valueOf(session.getUserId()));
                 Log.i("Username", session.getUserName());
 
-                /*
-                TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+
+                MyTwitterApiClient twitterApiClient = new MyTwitterApiClient(session);
+//                TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
                 // Can also use Twitter directly: Twitter.getApiClient()
-                //Obtem os tweets favoritos!!
+
+                //Obtem os tweets favoritos
                 FavoriteService favoriteService =  twitterApiClient.getFavoriteService();
                 favoriteService.list(session.getUserId(), null, null, null, null, null, new Callback<List<Tweet>>() {
                     @Override
@@ -167,10 +172,11 @@ public class MainActivity extends ActionBarActivity
                     public void failure(TwitterException e) {
                         Log.i("Failure2", "");
                     }
-                });*/
+                });
 
-                MyTwitterApiClient client = new MyTwitterApiClient(session);
-                client.getFriendsService().idsByUserId(session.getUserId(), new Callback<MyTwitterApiClient.Ids>() {
+
+                //Obtem a lista de amigos que o usuário segue
+                twitterApiClient.getFriendsService().idsByUserId(session.getUserId(), new Callback<MyTwitterApiClient.Ids>() {
                     @Override
                     public void success(Result<MyTwitterApiClient.Ids> result) {
                         //success
@@ -183,6 +189,21 @@ public class MainActivity extends ActionBarActivity
                         //failure
                         Log.i("Failure3", exception.getMessage());
 
+                    }
+                });
+
+                //Obtem informações do perfil do usuário
+                twitterApiClient.getAccountService().verifyCredentials(true, false, new Callback<User>() {
+                    @Override
+                    public void success(Result<User> userResult) {
+                        Log.i("Result4", "");
+                        User u = userResult.data;
+                        Log.i("Name", u.name);
+                    }
+
+                    @Override
+                    public void failure(TwitterException e) {
+                        Log.i("Failure4", e.getMessage());
                     }
                 });
             }

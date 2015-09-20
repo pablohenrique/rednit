@@ -12,6 +12,7 @@ import com.twitter.sdk.android.core.TwitterApiClient;
 import retrofit.http.GET;
 import retrofit.http.Query;
 
+//https://twittercommunity.com/t/android-extension-example/27436
 public class MyTwitterApiClient extends TwitterApiClient {
     public MyTwitterApiClient(Session session) {
         super(session);
@@ -23,6 +24,7 @@ public class MyTwitterApiClient extends TwitterApiClient {
     public FriendsService getFriendsService() {
         return getService(FriendsService.class);
     }
+//    public FavoriteService getFavoriteService() { return getFavoriteService(); }
 
     public interface FriendsService {
         @GET("/1.1/friends/ids.json")
@@ -37,7 +39,18 @@ public class MyTwitterApiClient extends TwitterApiClient {
         void idsByUserId(@Query("user_id") Long userId,
                          Callback<Ids> cb);
     }
-
+/*
+    public interface FavoriteService {
+        @GET("/1.1/favorites/list.json")
+        void list(@Query("user_id") Long var1,
+                  @Query("screen_name") String var2,
+                  @Query("count") Integer var3,
+                  @Query("since_id") String var4,
+                  @Query("max_id") String var5,
+                  @Query("include_entities") Boolean var6,
+                  Callback<List<Tweet>> var7);
+    }
+*/
     public class Ids {
         @SerializedName("previous_cursor")
         public final Long previousCursor;
