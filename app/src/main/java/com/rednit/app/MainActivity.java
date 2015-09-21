@@ -3,15 +3,27 @@ package com.rednit.app;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.net.Uri;
-import android.os.StrictMode;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.os.StrictMode;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-import com.facebook.*;
+
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.facebook.Profile;
+import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.ConnectionResult;
@@ -21,9 +33,21 @@ import com.raizlabs.android.dbflow.config.FlowManager;
 import com.rednit.app.Controller.MyLocation;
 import com.rednit.app.Model.FiwareContextJson;
 import com.rednit.app.Model.MyFacebook;
+import com.rednit.app.Util.MyTwitterApiClient;
 import com.rednit.app.Util.Util;
 import com.rednit.app.View.HomeFragment;
 import com.rednit.app.View.ResultListFragment;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterAuthToken;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
+import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.models.User;
+import com.twitter.sdk.android.core.services.FavoriteService;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -44,6 +68,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import io.fabric.sdk.android.Fabric;
+
 
 public class MainActivity extends ActionBarActivity
         implements View.OnClickListener,
@@ -52,7 +78,15 @@ public class MainActivity extends ActionBarActivity
         ResultListFragment.OnFragmentInteractionListener,
         HomeFragment.OnFragmentInteractionListener{
 
+    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+    private static final String TWITTER_KEY = "MEhrB2Z8cdbUP0P97vnrbFjZy";
+    private static final String TWITTER_SECRET = "ULgjeTVKOhAmpUh8zA9guMUU243kqTwj095TR2o6cZnNNeYGww";
+
+
     private Util utils;
+
+    /*TWITTER VARIABLES*/
+    private TwitterLoginButton twitterLoginButton;
 
     /*FACEBOOK VARIABLES*/
     private List<String> permissions = Arrays.asList("public_profile", "email", "user_likes");
@@ -76,6 +110,8 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this, new Twitter(authConfig));
         FacebookSdk.sdkInitialize(this.getApplicationContext());
         setContentView(R.layout.activity_main);
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
@@ -96,9 +132,92 @@ public class MainActivity extends ActionBarActivity
         //        facebookLogOut();
         googleLogOut();
 
-        this.facebookSetup();
-
         myFacebook = new MyFacebook();
+
+        this.facebookSetup();
+//        https://docs.fabric.io/android/twitter/access-rest-api.html
+//        https://dev.twitter.com/node/1180/twittercore
+//        https://developers.facebook.com/apps/731261337003089/settings/
+        twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+        twitterLoginButton.setCallback(new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                // Do something with result, which provides a TwitterSession for making API calls
+                callLoginLoadingScreen();
+
+                TwitterSession session = Twitter.getSessionManager().getActiveSession();
+                TwitterAuthToken authToken = session.getAuthToken();
+                String token = authToken.token;
+                String secret = authToken.secret;
+                Log.i("TwitterToken", token);    //211736597-Jkr7pjIVsjzvwT8hEZewTlXT4Sck1HvfvUYfbTXh
+                Log.i("TwitterSecret", secret);  //qWnD6KgqoVrQ0NbuqFZev79bkhTHrjaX5r5g09Zt8Hfbc
+                Log.i("Id", String.valueOf(session.getId()));
+                Log.i("UserId", String.valueOf(session.getUserId()));
+                Log.i("Username", session.getUserName());
+
+
+                MyTwitterApiClient twitterApiClient = new MyTwitterApiClient(session);
+//                TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+                // Can also use Twitter directly: Twitter.getApiClient()
+
+                //Obtem os tweets favoritos
+                FavoriteService favoriteService =  twitterApiClient.getFavoriteService();
+                favoriteService.list(session.getUserId(), null, null, null, null, null, new Callback<List<Tweet>>() {
+                    @Override
+                    public void success(Result<List<Tweet>> result) {
+                        Log.i("Success2", "");
+                        List<Tweet> l = result.data;
+                        for (int i = 0; i < l.size(); i++) {
+                            Log.i("Result:", l.get(i).text);
+                        }
+                    }
+
+                    @Override
+                    public void failure(TwitterException e) {
+                        Log.i("Failure2", "");
+                    }
+                });
+
+
+                //Obtem a lista de amigos que o usuário segue
+                twitterApiClient.getFriendsService().idsByUserId(session.getUserId(), new Callback<MyTwitterApiClient.Ids>() {
+                    @Override
+                    public void success(Result<MyTwitterApiClient.Ids> result) {
+                        //success
+                        Log.i("Result3", "");
+                        result.data.printIds();
+                    }
+
+                    @Override
+                    public void failure(TwitterException exception) {
+                        //failure
+                        Log.i("Failure3", exception.getMessage());
+
+                    }
+                });
+
+                //Obtem informações do perfil do usuário
+                twitterApiClient.getAccountService().verifyCredentials(true, false, new Callback<User>() {
+                    @Override
+                    public void success(Result<User> userResult) {
+                        Log.i("Result4", "");
+                        User u = userResult.data;
+                        Log.i("Name", u.name);
+                    }
+
+                    @Override
+                    public void failure(TwitterException e) {
+                        Log.i("Failure4", e.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                // Do something on failure
+            }
+        });
+
 
     }
 
@@ -125,6 +244,10 @@ public class MainActivity extends ActionBarActivity
         else {
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
+
+
+        //Twitter
+        twitterLoginButton.onActivityResult(requestCode, resultCode, data);
     }
 
     //Google
@@ -175,9 +298,33 @@ public class MainActivity extends ActionBarActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }else{
+            if (id == R.id.action_fb_logout) {
+                facebookLogOut();
+                Fragment fg = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                if(fg != null){
+                    getSupportFragmentManager().beginTransaction().
+                            remove(fg).commit();
+                }
+            }else{
+                if (id == R.id.action_twitter_logout) {
+                    twitterLogOut();
+                    Fragment fg = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                    if(fg != null){
+                        getSupportFragmentManager().beginTransaction().
+                                remove(fg).commit();
+                    }
+                }
+            }
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void twitterLogOut() {
+        //https://twittercommunity.com/t/fabric-logout/29947/6
+        Twitter.getInstance();
+        Twitter.logOut();
     }
 
     @Override
@@ -266,7 +413,9 @@ public class MainActivity extends ActionBarActivity
 
 
 //            extractLikes(profile.getId(), "");
-            myFacebook.extractLikes(profile.getId(), "");
+            if(profile != null) {
+                myFacebook.extractLikes(profile.getId(), "");
+            }
             gps = new MyLocation(MainActivity.this);
 
 
@@ -315,125 +464,6 @@ public class MainActivity extends ActionBarActivity
         }
 
 
-    }
-
-    public void extractLikes(final String profile, String after){
-        Bundle params = new Bundle();
-        params.putString("after", after);
-//        params.putString("limit", "1000");
-//        params.putInt("limit", 1000);
-        new GraphRequest(
-                AccessToken.getCurrentAccessToken(),
-                "/" + profile + "/likes",
-                params,
-                HttpMethod.GET,
-                new GraphRequest.Callback() {
-                    @Override
-                    public void onCompleted(GraphResponse graphResponse) {
-                        JSONObject jsonObject = graphResponse.getJSONObject();
-                        try {
-                            JSONArray jsonArray = jsonObject.getJSONArray("data");
-                            setLikedPages(jsonArray.toString());
-                            if(!jsonObject.isNull("paging")) {
-                                JSONObject paging = jsonObject.getJSONObject("paging");
-
-//                        putDataToServer(paging);
-
-//                                putDataToServer(new FiwareContextJson(profile).extractPages(jsonArray).toJSON());
-                                myFacebook.putDataToServer(new FiwareContextJson(profile).extractPages(jsonArray).toJSON());
-
-                                JSONObject cursors = paging.getJSONObject("cursors");
-                                if (!cursors.isNull("after")) {
-//                                    extractLikes(profile, cursors.getString("after"));
-                                    myFacebook.extractLikes(profile, cursors.getString("after"));
-                                    //                                    afterString[0] = cursors.getString("after");
-                                } else {
-                                    System.out.println(getLikedPages());
-                                    return;
-                                }
-                                //                                    noData[0] = true;
-                            }
-                            else {
-                                System.out.println(getLikedPages());
-                                return;
-                            }
-                            //                                noData[0] = true;
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        } catch (Throwable throwable) {
-                            throwable.printStackTrace();
-                        }
-                    }
-                }
-        ).executeAndWait();
-    }
-
-    public  String putDataToServer(JSONObject returnedJObject) throws Throwable {
-        System.out.println("|");
-        System.out.println(returnedJObject.toString());
-        System.out.println("|");
-        String url = "http://45.55.148.217:1026/ngsi10/updateContext";
-        HttpPost request = new HttpPost(url);
-        JSONStringer json = new JSONStringer();
-        StringBuilder sb=new StringBuilder();
-
-
-        if (returnedJObject!=null)
-        {
-            Iterator<String> itKeys = returnedJObject.keys();
-            if(itKeys.hasNext())
-                json.object();
-            while (itKeys.hasNext())
-            {
-                String k=itKeys.next();
-                json.key(k).value(returnedJObject.get(k));
-                Log.e("keys " + k, "value " + returnedJObject.get(k).toString());
-            }
-        }
-        json.endObject();
-
-
-        StringEntity entity = new StringEntity(json.toString());
-        entity.setContentType("application/json;charset=UTF-8");
-        entity.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,"application/json;charset=UTF-8"));
-        request.setHeader("Accept", "application/json");
-        request.setEntity(entity);
-
-        HttpResponse response =null;
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-
-//        HttpConnectionParams.setSoTimeout(httpClient.getParams(), Constants.ANDROID_CONNECTION_TIMEOUT * 1000);
-//        HttpConnectionParams.setConnectionTimeout(httpClient.getParams(),Constants.ANDROID_CONNECTION_TIMEOUT*1000);
-        try{
-
-            response = httpClient.execute(request);
-        }
-        catch(SocketException se)
-        {
-            Log.e("SocketException", se+"");
-            throw se;
-        }
-
-
-
-
-        InputStream in = response.getEntity().getContent();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        String line = null;
-        while((line = reader.readLine()) != null){
-            sb.append(line);
-
-        }
-
-        return sb.toString();
-    }
-
-    public void setLikedPages(String t){
-        this.likedPages += t;
-    }
-
-    public String getLikedPages(){
-        return this.likedPages;
     }
 
     public static void facebookLogOut() {
