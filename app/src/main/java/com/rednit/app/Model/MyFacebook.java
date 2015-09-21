@@ -81,14 +81,6 @@ public class MyFacebook {
         ).executeAndWait();
     }
 
-    public void setLikedPages(String t){
-        this.likedPages += t;
-    }
-
-    public String getLikedPages(){
-        return this.likedPages;
-    }
-
     public  String putDataToServer(JSONObject returnedJObject) throws Throwable {
         System.out.println("|");
         System.out.println(returnedJObject.toString());
@@ -147,6 +139,14 @@ public class MyFacebook {
         }
 
         return sb.toString();
+    }
+
+    public void setLikedPages(String t){
+        this.likedPages += t;
+    }
+
+    public String getLikedPages(){
+        return this.likedPages;
     }
 
 }

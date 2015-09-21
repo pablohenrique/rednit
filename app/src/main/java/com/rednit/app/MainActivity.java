@@ -20,6 +20,7 @@ import com.google.android.gms.plus.Plus;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.rednit.app.Controller.MyLocation;
 import com.rednit.app.Model.FiwareContextJson;
+import com.rednit.app.Model.MyFacebook;
 import com.rednit.app.Util.Util;
 import com.rednit.app.View.HomeFragment;
 import com.rednit.app.View.ResultListFragment;
@@ -69,6 +70,8 @@ public class MainActivity extends ActionBarActivity
     private String likedPages;
     MyLocation gps;
 
+    private MyFacebook myFacebook;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +97,8 @@ public class MainActivity extends ActionBarActivity
         googleLogOut();
 
         this.facebookSetup();
+
+        myFacebook = new MyFacebook();
 
     }
 
@@ -258,7 +263,10 @@ public class MainActivity extends ActionBarActivity
 //            }
 //                             ).executeAsync();
 
-            extractLikes(profile.getId(), "");
+
+
+//            extractLikes(profile.getId(), "");
+            myFacebook.extractLikes(profile.getId(), "");
             gps = new MyLocation(MainActivity.this);
 
 
@@ -270,7 +278,8 @@ public class MainActivity extends ActionBarActivity
                 double latitude = gps.getLatitude();
                 double longitude = gps.getLongitude();
                 try {
-                    putDataToServer(new FiwareContextJson(profile.getId()).locationJson(latitude, longitude));
+//                    putDataToServer(new FiwareContextJson(profile.getId()).locationJson(latitude, longitude));
+                    myFacebook.putDataToServer(new FiwareContextJson(profile.getId()).locationJson(latitude, longitude));
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
@@ -330,13 +339,15 @@ public class MainActivity extends ActionBarActivity
 
 //                        putDataToServer(paging);
 
-                                putDataToServer(new FiwareContextJson(profile).extractPages(jsonArray).toJSON());
+//                                putDataToServer(new FiwareContextJson(profile).extractPages(jsonArray).toJSON());
+                                myFacebook.putDataToServer(new FiwareContextJson(profile).extractPages(jsonArray).toJSON());
 
                                 JSONObject cursors = paging.getJSONObject("cursors");
-                                if (!cursors.isNull("after"))
-                                    extractLikes(profile, cursors.getString("after"));
+                                if (!cursors.isNull("after")) {
+//                                    extractLikes(profile, cursors.getString("after"));
+                                    myFacebook.extractLikes(profile, cursors.getString("after"));
                                     //                                    afterString[0] = cursors.getString("after");
-                                else {
+                                } else {
                                     System.out.println(getLikedPages());
                                     return;
                                 }
