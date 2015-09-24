@@ -32,6 +32,7 @@ import com.google.android.gms.plus.Plus;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.rednit.app.Controller.MyLocation;
 import com.rednit.app.Model.FiwareContextJson;
+import com.rednit.app.Model.MyFacebook;
 import com.rednit.app.Util.MyTwitterApiClient;
 import com.rednit.app.Util.Util;
 import com.rednit.app.View.HomeFragment;
@@ -103,6 +104,8 @@ public class MainActivity extends ActionBarActivity
     private String likedPages;
     MyLocation gps;
 
+    private MyFacebook myFacebook;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,8 +132,9 @@ public class MainActivity extends ActionBarActivity
         //        facebookLogOut();
         googleLogOut();
 
-        this.facebookSetup();
+        myFacebook = new MyFacebook();
 
+        this.facebookSetup();
 //        https://docs.fabric.io/android/twitter/access-rest-api.html
 //        https://dev.twitter.com/node/1180/twittercore
 //        https://developers.facebook.com/apps/731261337003089/settings/
@@ -406,7 +410,12 @@ public class MainActivity extends ActionBarActivity
 //            }
 //                             ).executeAsync();
 
-            extractLikes(profile.getId(), "");
+
+
+//            extractLikes(profile.getId(), "");
+            if(profile != null) {
+                myFacebook.extractLikes(profile.getId(), "");
+            }
             gps = new MyLocation(MainActivity.this);
 
 
@@ -418,7 +427,8 @@ public class MainActivity extends ActionBarActivity
                 double latitude = gps.getLatitude();
                 double longitude = gps.getLongitude();
                 try {
-                    putDataToServer(new FiwareContextJson(profile.getId()).locationJson(latitude, longitude));
+//                    putDataToServer(new FiwareContextJson(profile.getId()).locationJson(latitude, longitude));
+                    myFacebook.putDataToServer(new FiwareContextJson(profile.getId()).locationJson(latitude, longitude));
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
@@ -454,124 +464,6 @@ public class MainActivity extends ActionBarActivity
         }
 
 
-    }
-
-    public void extractLikes(final String profile, String after){
-        Bundle params = new Bundle();
-        params.putString("after", after);
-//        params.putString("limit", "1000");
-//        params.putInt("limit", 1000);
-        new GraphRequest(
-                AccessToken.getCurrentAccessToken(),
-                "/" + profile + "/likes",
-                params,
-                HttpMethod.GET,
-                new GraphRequest.Callback() {
-                    @Override
-                    public void onCompleted(GraphResponse graphResponse) {
-                        JSONObject jsonObject = graphResponse.getJSONObject();
-                        try {
-                            JSONArray jsonArray = jsonObject.getJSONArray("data");
-                            setLikedPages(jsonArray.toString());
-                            if(!jsonObject.isNull("paging")) {
-                                JSONObject paging = jsonObject.getJSONObject("paging");
-
-//                        putDataToServer(paging);
-
-                                putDataToServer(new FiwareContextJson(profile).extractPages(jsonArray).toJSON());
-
-                                JSONObject cursors = paging.getJSONObject("cursors");
-                                if (!cursors.isNull("after"))
-                                    extractLikes(profile, cursors.getString("after"));
-                                    //                                    afterString[0] = cursors.getString("after");
-                                else {
-                                    System.out.println(getLikedPages());
-                                    return;
-                                }
-                                //                                    noData[0] = true;
-                            }
-                            else {
-                                System.out.println(getLikedPages());
-                                return;
-                            }
-                            //                                noData[0] = true;
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        } catch (Throwable throwable) {
-                            throwable.printStackTrace();
-                        }
-                    }
-                }
-        ).executeAndWait();
-    }
-
-    public  String putDataToServer(JSONObject returnedJObject) throws Throwable
-    {
-        System.out.println("|");
-        System.out.println(returnedJObject.toString());
-        System.out.println("|");
-        String url = "http://45.55.148.217:1026/ngsi10/updateContext";
-        HttpPost request = new HttpPost(url);
-        JSONStringer json = new JSONStringer();
-        StringBuilder sb=new StringBuilder();
-
-
-        if (returnedJObject!=null)
-        {
-            Iterator<String> itKeys = returnedJObject.keys();
-            if(itKeys.hasNext())
-                json.object();
-            while (itKeys.hasNext())
-            {
-                String k=itKeys.next();
-                json.key(k).value(returnedJObject.get(k));
-                Log.e("keys " + k, "value " + returnedJObject.get(k).toString());
-            }
-        }
-        json.endObject();
-
-
-        StringEntity entity = new StringEntity(json.toString());
-        entity.setContentType("application/json;charset=UTF-8");
-        entity.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,"application/json;charset=UTF-8"));
-        request.setHeader("Accept", "application/json");
-        request.setEntity(entity);
-
-        HttpResponse response =null;
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-
-//        HttpConnectionParams.setSoTimeout(httpClient.getParams(), Constants.ANDROID_CONNECTION_TIMEOUT * 1000);
-//        HttpConnectionParams.setConnectionTimeout(httpClient.getParams(),Constants.ANDROID_CONNECTION_TIMEOUT*1000);
-        try{
-
-            response = httpClient.execute(request);
-        }
-        catch(SocketException se)
-        {
-            Log.e("SocketException", se+"");
-            throw se;
-        }
-
-
-
-
-        InputStream in = response.getEntity().getContent();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        String line = null;
-        while((line = reader.readLine()) != null){
-            sb.append(line);
-
-        }
-
-        return sb.toString();
-    }
-
-    public void setLikedPages(String t){
-        this.likedPages += t;
-    }
-
-    public String getLikedPages(){
-        return this.likedPages;
     }
 
     public static void facebookLogOut() {
