@@ -492,7 +492,8 @@ public class MainActivity extends ActionBarActivity
     private void callLoginLoadingScreen(){
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.fragment_container, new HomeFragment())
+//                .add(R.id.fragment_container, new HomeFragment())
+                .add(R.id.fragment_container, new ResultListFragment())
                 .commit();
     }
 
