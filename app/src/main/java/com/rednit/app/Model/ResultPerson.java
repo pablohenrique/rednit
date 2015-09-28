@@ -17,7 +17,26 @@ public class ResultPerson {
     private String firstName;
     private String secondName;
     private String pictureProfile;
-    private ArrayList<String> interestList = new ArrayList<String>();
+    private ArrayList<String> interestList;
+
+    public ResultPerson(long id, String identifier, String socialMedia, String firstName, String secondName, String pictureProfile, ArrayList<String> interestList){
+        setId(id);
+        setIdentifier(identifier);
+        setSocialMedia(socialMedia);
+        setFirstName(firstName);
+        setSecondName(secondName);
+        setPictureProfile(pictureProfile);
+        setInterestList(interestList);
+    }
+
+    public ResultPerson(long id, String identifier, String socialMedia, String firstName, String secondName, String pictureProfile){
+        setId(id);
+        setIdentifier(identifier);
+        setSocialMedia(socialMedia);
+        setFirstName(firstName);
+        setSecondName(secondName);
+        setPictureProfile(pictureProfile);
+    }
 
     public JSONObject toJSON(){
         try {
@@ -42,6 +61,10 @@ public class ResultPerson {
             jsonArray.put(interest);
         }
         return jsonArray;
+    }
+
+    public String getFullName(){
+        return getFirstName() + " " + getSecondName();
     }
 
     public String getFirstName() {
