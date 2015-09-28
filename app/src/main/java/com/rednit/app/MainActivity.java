@@ -365,8 +365,8 @@ public class MainActivity extends ActionBarActivity
                 loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        callLoginLoadingScreen();
                         System.out.println("Facebook Success");
+                        callLoginLoadingScreen();
                     }
 
                     @Override
@@ -418,10 +418,6 @@ public class MainActivity extends ActionBarActivity
             }
             gps = new MyLocation(MainActivity.this);
 
-
-
-
-
             if(gps.canGetLocation()){
 
                 double latitude = gps.getLatitude();
@@ -461,6 +457,8 @@ public class MainActivity extends ActionBarActivity
             //            );
             //            graphRequest.setParameters(parameters);
             //            graphRequest.executeAsync();
+
+            callLoginLoadingScreen();
         }
 
 
