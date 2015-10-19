@@ -35,6 +35,7 @@ import com.rednit.app.Model.FiwareContextJson;
 import com.rednit.app.Model.MyFacebook;
 import com.rednit.app.Util.MyTwitterApiClient;
 import com.rednit.app.Util.Util;
+import com.rednit.app.View.ChatFragment;
 import com.rednit.app.View.HomeFragment;
 import com.rednit.app.View.ResultListFragment;
 import com.twitter.sdk.android.Twitter;
@@ -491,7 +492,8 @@ public class MainActivity extends ActionBarActivity
         getSupportFragmentManager()
                 .beginTransaction()
 //                .add(R.id.fragment_container, new HomeFragment())
-                .add(R.id.fragment_container, new ResultListFragment())
+//                .add(R.id.fragment_container, new ResultListFragment())
+                .add(R.id.fragment_container, new ChatFragment())
                 .commit();
     }
 

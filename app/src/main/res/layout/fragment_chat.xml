@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.rednit.app.View.ChatFragment">
+    tools:context="com.rednit.app.View.ChatFragment"
+    android:background="@color/white"
+    android:clickable="true">
 
     <RelativeLayout
         android:id="@+id/chat_friend_header"
@@ -21,6 +23,49 @@
             android:layout_height="wrap_content"
             android:text="Fulaninho Doido"
             android:textSize="20sp"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/messages"
+            android:layout_below="@+id/chat_friend_avatar"
+            android:layout_above="@+id/texting_bar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:scrollbars="vertical"
+            android:scrollbarStyle="outsideOverlay"/>
+
+        <LinearLayout
+            android:id="@+id/texting_bar"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <EditText
+                android:id="@+id/message_input"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/prompt_message"
+                android:imeActionId="@+id/send"
+                android:imeActionLabel="@string/action_send"
+                android:imeOptions="actionSend"
+                android:inputType="text"
+                android:maxLines="1"
+                android:singleLine="true"/>
+            <ImageButton
+                android:id="@+id/send_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/ic_menu_send"
+                android:contentDescription="@string/action_send"/>
+
+        </LinearLayout>
     </RelativeLayout>
 
 </FrameLayout>
