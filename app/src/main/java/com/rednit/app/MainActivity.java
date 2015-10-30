@@ -216,6 +216,7 @@ public class MainActivity extends ActionBarActivity
             }
         });
 
+<<<<<<< HEAD
     }
 
     public void postToServer(final String urlParam, final JSONObject jdata){
@@ -263,6 +264,9 @@ public class MainActivity extends ActionBarActivity
                 }
             }
         }).start();
+=======
+        System.out.println("Testando twitter branch");
+>>>>>>> 4fac817f2aabd764930f9a990c05bb4a459656dd
 
 
     }
