@@ -19,9 +19,6 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
@@ -49,27 +46,19 @@ import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.models.User;
 import com.twitter.sdk.android.core.services.FavoriteService;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.SocketException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
-
 
 public class MainActivity extends ActionBarActivity
         implements View.OnClickListener,
@@ -81,7 +70,7 @@ public class MainActivity extends ActionBarActivity
     // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
     private static final String TWITTER_KEY = "MEhrB2Z8cdbUP0P97vnrbFjZy";
     private static final String TWITTER_SECRET = "ULgjeTVKOhAmpUh8zA9guMUU243kqTwj095TR2o6cZnNNeYGww";
-
+    private String TAG = "Twitter";
 
     private Util utils;
 
@@ -161,7 +150,7 @@ public class MainActivity extends ActionBarActivity
                 // Can also use Twitter directly: Twitter.getApiClient()
 
                 //Obtem os tweets favoritos
-                FavoriteService favoriteService =  twitterApiClient.getFavoriteService();
+                FavoriteService favoriteService = twitterApiClient.getFavoriteService();
                 favoriteService.list(session.getUserId(), null, null, null, null, null, new Callback<List<Tweet>>() {
                     @Override
                     public void success(Result<List<Tweet>> result) {
@@ -170,6 +159,15 @@ public class MainActivity extends ActionBarActivity
                         for (int i = 0; i < l.size(); i++) {
                             Log.i("Result:", l.get(i).text);
                         }
+
+                        final JSONObject jo = new JSONObject();
+                        try {
+                            jo.put("name", "Leo1 From Android");
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        postToServer("http://10.1.1.5:3000/api/accounts", jo);
                     }
 
                     @Override
@@ -218,7 +216,53 @@ public class MainActivity extends ActionBarActivity
             }
         });
 
-        System.out.println("Testando twitter branch");
+    }
+
+    public void postToServer(final String urlParam, final JSONObject jdata){
+        new Thread(new Runnable() {
+            public void run() {
+                URL url = null;
+                try {
+                    url = new URL(urlParam);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestProperty("Content-Type", "application/json");
+                    conn.setRequestMethod("POST");
+                    conn.setDoOutput(true);
+
+                    System.out.println("Dado: "+jdata.get("name") );
+
+                    OutputStream outputStream = conn.getOutputStream();
+                    outputStream.write(jdata.toString().getBytes());
+
+                    int serverResponseCode = conn.getResponseCode();
+                    String serverResponseMessage = conn.getResponseMessage();
+
+                    Log.i("HTTP Response is : ", serverResponseMessage + ": " + serverResponseCode);
+
+                    //Get Response. If you need to get a response you can uncomment this code below
+//                    if(serverResponseCode == HttpURLConnection.HTTP_OK){
+//                        InputStream is = conn.getInputStream();
+//                        BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+//                        String line;
+//                        StringBuffer response = new StringBuffer();
+//                        while ((line = rd.readLine()) != null) {
+//                            response.append(line);
+//                            response.append('\r');
+//                            Log.i("Line: ", line);
+//                        }
+//                        rd.close();
+//                    }
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (ProtocolException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
 
     }
