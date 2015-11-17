@@ -313,7 +313,7 @@ public class MainActivity extends ActionBarActivity
 
     private void facebookSetup() {
         loginButton = (LoginButton) findViewById(R.id.main_btn_facebook);
-        AccessToken.refreshCurrentAccessTokenAsync();
+//        AccessToken.refreshCurrentAccessTokenAsync();
 
         if (AccessToken.getCurrentAccessToken() == null) {
             if (!utils.checkConnection(MainActivity.this)) {
@@ -341,6 +341,7 @@ public class MainActivity extends ActionBarActivity
                     @Override
                     public void onError(FacebookException exception) {
                         System.out.println("Facebook Error");
+                        AccessToken.refreshCurrentAccessTokenAsync();
                     }
                 });
             }
@@ -395,6 +396,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     private void callLoginLoadingScreen() {
+        twitterLoginButton.setVisibility(View.INVISIBLE);
         getSupportFragmentManager()
                 .beginTransaction()
                 .add(R.id.fragment_container, new HomeFragment())
