@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -26,10 +27,12 @@ import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
+import com.google.gson.Gson;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.rednit.app.Controller.MyLocation;
 import com.rednit.app.Model.FiwareContextJson;
 import com.rednit.app.Model.MyFacebook;
+import com.rednit.app.Model.TwitterAccount;
 import com.rednit.app.Util.MyTwitterApiClient;
 import com.rednit.app.Util.Util;
 import com.rednit.app.View.HomeFragment;
@@ -51,6 +54,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -71,6 +75,7 @@ public class MainActivity extends ActionBarActivity
     private static final String TWITTER_KEY = "MEhrB2Z8cdbUP0P97vnrbFjZy";
     private static final String TWITTER_SECRET = "ULgjeTVKOhAmpUh8zA9guMUU243kqTwj095TR2o6cZnNNeYGww";
 
+    private String TAG = "TWITTER:";
 
     private Util utils;
 
@@ -94,6 +99,11 @@ public class MainActivity extends ActionBarActivity
     MyLocation gps;
 
     private MyFacebook myFacebook;
+
+
+    private TwitterAccount twitterAccount;
+    static boolean x = true;
+
 
 
     @Override
@@ -127,6 +137,7 @@ public class MainActivity extends ActionBarActivity
 //        https://docs.fabric.io/android/twitter/access-rest-api.html
 //        https://dev.twitter.com/node/1180/twittercore
 //        https://developers.facebook.com/apps/731261337003089/settings/
+        twitterAccount = new TwitterAccount();
         twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
         twitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override
@@ -145,30 +156,66 @@ public class MainActivity extends ActionBarActivity
                 Log.i("Username", session.getUserName());
 
 
-                MyTwitterApiClient twitterApiClient = new MyTwitterApiClient(session);
+                final MyTwitterApiClient twitterApiClient = new MyTwitterApiClient(session);
 //                TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
                 // Can also use Twitter directly: Twitter.getApiClient()
 
                 //Obtem os tweets favoritos
-                FavoriteService favoriteService =  twitterApiClient.getFavoriteService();
+                FavoriteService favoriteService = twitterApiClient.getFavoriteService();
                 favoriteService.list(session.getUserId(), null, null, null, null, null, new Callback<List<Tweet>>() {
                     @Override
                     public void success(Result<List<Tweet>> result) {
-                        Log.i("Success2", "");
+                        //pegar cada favorito,
+                        //fazer um GET nos tweets
+                        //se nao existe, faz um post nos tweets
+                        //add na lista de json de favoritos
+                        //num futuro perto, add accounts
+
+//                        Log.i("Success2", "");
                         List<Tweet> l = result.data;
+//                        Log.i(TAG+"FAV",MainActivity.toString(l.get(0)));
+//                        Log.i(TAG+"ENT",MainActivity.toString(l.get(0).entities));
+//                        Log.i(TAG+"USER2",MainActivity.toString(l.get(0).user));
+                        com.rednit.app.Model.Tweet tweets[] = new com.rednit.app.Model.Tweet[l.size()];
                         for (int i = 0; i < l.size(); i++) {
-                            Log.i("Result:", l.get(i).text);
-                        }
+                            Log.i(TAG, "Text:" + l.get(i).text);
+                            Log.i(TAG, "CreatedAt:" + l.get(i).createdAt);
+                            Log.i(TAG, "IdStr:" + l.get(i).idStr);
+                            com.rednit.app.Model.Tweet tweet = new com.rednit.app.Model.Tweet();
+                            tweet.setCreatedAt(l.get(i).createdAt);
+                            tweet.setText(l.get(i).text);
+                            tweet.setIdStr(l.get(i).idStr);
+                            tweets[i] = tweet;
 
-                        final JSONObject jo = new JSONObject();
-                        try {
-                            jo.put("name", "Leo1 From Android");
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+//                            Log.i(TAG,"Id:"+ String.valueOf(l.get(i).id));
+//                            Log.i("Latitude:", String.valueOf(l.get(i).coordinates.getLatitude()));
+//                            Log.i("Longitude:", String.valueOf(l.get(i).coordinates.getLongitude()));
+//                            Log.i(TAG,"Lang:"+ l.get(i).lang);
+//                            Log.i(TAG,"Favorited:"+ String.valueOf(l.get(i).favorited));
+//                            Log.i(TAG,"Retweed:"+ String.valueOf(l.get(i).retweeted));
+//                            if(l.get(i).coordinates != null) {
+//                                Log.i(TAG,"Latitude:"+ String.valueOf(l.get(i).coordinates.getLatitude()));
+//                                Log.i(TAG,"Longitude:"+ String.valueOf(l.get(i).coordinates.getLongitude()));
+//                            }
+//                            Log.i("Retweed:", String.valueOf(l.get(i).));
                         }
-                        postToServer("http://172.16.0.3:3000/api/accounts", jo);
+                        twitterAccount.setFavorites(tweets);
+
+                        // Fazer um GET pesquisando por twitterAccount.twitterId
+                        // se encontrado realizar um PUT em /api/accounts/{_id} utilizando a _id retornada
+                        // caso nao encontrado realizar um POST /api/accounts e recuperar a _id retornada
+                        // guardar a _id para eventual uso futuro
+
+//                        final JSONObject jo = new JSONObject();
+//                        try {
+//                            jo.put("name", "Leo1 From Android");
+//
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                        postToServer("http://10.15.183.121:3000/api/accounts", jo);
                     }
+
 
                     @Override
                     public void failure(TwitterException e) {
@@ -182,8 +229,11 @@ public class MainActivity extends ActionBarActivity
                     @Override
                     public void success(Result<MyTwitterApiClient.Ids> result) {
                         //success
-                        Log.i("Result3", "");
-                        result.data.printIds();
+                        twitterAccount.setFollowing(result.data.ids);
+                        //pegar cada id dos amigos
+                        //fazer um GET no accounts
+                        //se existe add em um json de following
+                        //depois num futuro proximo, faz um POST do account...
                     }
 
                     @Override
@@ -198,9 +248,7 @@ public class MainActivity extends ActionBarActivity
                 twitterApiClient.getAccountService().verifyCredentials(true, false, new Callback<User>() {
                     @Override
                     public void success(Result<User> userResult) {
-                        Log.i("Result4", "");
-                        User u = userResult.data;
-                        Log.i("Name", u.name);
+                        twitterAccount.setTwitterId(userResult.data.id);
                     }
 
                     @Override
@@ -208,6 +256,10 @@ public class MainActivity extends ActionBarActivity
                         Log.i("Failure4", e.getMessage());
                     }
                 });
+
+//                Gson gson = new Gson();
+//                String json = gson.toJson(twitterAccount);
+//                System.out.println("TEX:"+twitterAccount.getTwitterId());
             }
 
             @Override
@@ -215,6 +267,39 @@ public class MainActivity extends ActionBarActivity
                 // Do something on failure
             }
         });
+
+
+        //atualiza depois de 10seg. isso pode ser alterado posteriormente...
+        final Handler mHandler = new Handler();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+                while (x) {
+                    try {
+                        Thread.sleep(10000);
+                        mHandler.post(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                // TODO Auto-generated method stub
+                                // Write your code here to update the UI.
+                                Gson gson = new Gson();
+                String json = gson.toJson(twitterAccount);
+                System.out.println("TEX:"+json);
+                                x = false;
+
+//                System.out.println("TEX:"+twitterAccount.getFollowing()[0]);
+//                                System.out.println("TEX:"+twitterAccount.getFavorites()[0]);
+                            }
+                        });
+                    } catch (Exception e) {
+                        // TODO: handle exception
+                    }
+                }
+            }
+        }).start();
+
 
 
     }
@@ -545,5 +630,39 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    public static String toString(Object tweet) {
+        StringBuilder result = new StringBuilder();
+        String newLine = System.getProperty("line.separator");
+
+        result.append(tweet.getClass().getName());
+        result.append( " Object {" );
+        result.append(newLine);
+
+        //determine fields declared in this class only (no fields of superclass)
+        Field[] fields = tweet.getClass().getDeclaredFields();
+
+        //print field names paired with their values
+        for ( Field field : fields  ) {
+            result.append("  ");
+            try {
+                if(field.getName() == "user"){
+                    MainActivity.toString(field);
+
+                }else {
+                    result.append(field.getName());
+                    result.append(": ");
+                    //requires access to private field:
+                    result.append(field.get(tweet));
+                }
+            } catch ( IllegalAccessException ex ) {
+                System.out.println(ex);
+            }
+            result.append(newLine);
+        }
+        result.append("}");
+
+        return result.toString();
     }
 }
