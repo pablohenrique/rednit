@@ -1,6 +1,7 @@
 package com.rednit.app.View;
 
 import android.app.Activity;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,7 +12,10 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -19,7 +23,9 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.rednit.app.Controller.DownloadImageTask;
 import com.rednit.app.R;
+import com.rednit.app.Util.CustomJSONArrayRequest;
 import com.rednit.app.Util.CustomJSONObjectRequest;
 import com.rednit.app.Util.CustomVolleyRequestQueue;
 
@@ -97,16 +103,17 @@ public class HomeFragment
         mediumCircle = (ImageView) rootView.findViewById(R.id.home_img_medium_circle);
         smallCircle = (ImageView) rootView.findViewById(R.id.home_img_small_circle);
 
-        int[] empty = new int[0];
-//        animate(largeCircle, empty, 0, true);
-//        animate(mediumCircle, empty, 0, true);
-//        animate(smallCircle, empty, 0, true);
-
+        animate(largeCircle, true);
+        animate(mediumCircle, true);
+        animate(smallCircle, true);
 
         mQueue = CustomVolleyRequestQueue.prepareInstance(HomeFragment.this.getActivity()).getRequestQueue();
         String url = "http://54.88.31.160:3000/api/accounts";
-        CustomJSONObjectRequest jsonRequest = new CustomJSONObjectRequest(Request.Method.GET, url, new JSONObject(), HomeFragment.this, HomeFragment.this);
+//        CustomJSONObjectRequest jsonRequest = new CustomJSONObjectRequest(Request.Method.GET, url, new JSONObject(), HomeFragment.this, HomeFragment.this);
+        CustomJSONArrayRequest jsonRequest = new CustomJSONArrayRequest(Request.Method.GET, url, new JSONObject(), HomeFragment.this, HomeFragment.this);
         jsonRequest.setTag( HomeFragment.this.getClass().getName() );
+
+        new DownloadImageTask((ImageView) rootView.findViewById(R.id.home_img_profile_circle) ).execute("https://fbcdn-sphotos-c-a.akamaihd.net/hphotos-ak-xpa1/v/t1.0-9/12227650_10205587203534851_6504001002331463838_n.jpg?oh=25879438ca96cb696538117703ad719a&oe=56EFDA46&__gda__=1458285392_15704eb827c39039edcecd7f0821ac94");
         mQueue.add(jsonRequest);
 
         return rootView;
@@ -165,44 +172,21 @@ public class HomeFragment
         public void onFragmentInteraction(Uri uri);
     }
 
-    private void animate(final ImageView imageView, final int images[], final int imageIndex, final boolean forever) {
+    private void animate(final ImageView imageView, final boolean forever) {
 
-        //imageView <-- The View which displays the images
-        //images[] <-- Holds R references to the images to display
-        //imageIndex <-- index of the first image to show in images[]
-        //forever <-- If equals true then after the last image it starts all over again with the first image resulting in an infinite loop. You have been warned.
-
-        int fadeInDuration = 500; // Configure time values here
-        int timeBetween = 1000;
-        int fadeOutDuration = 1000;
-
-        imageView.setVisibility(View.INVISIBLE);    //Visible or invisible by default - this will apply when the animation ends
-//        imageView.setImageResource(images[imageIndex]);
-
-        Animation fadeIn = new AlphaAnimation(0, 1);
-        fadeIn.setInterpolator(new DecelerateInterpolator()); // add this
-        fadeIn.setDuration(fadeInDuration);
-
-        Animation fadeOut = new AlphaAnimation(1, 0);
-        fadeOut.setInterpolator(new AccelerateInterpolator()); // and this
-        fadeOut.setStartOffset(fadeInDuration + timeBetween);
-        fadeOut.setDuration(fadeOutDuration);
+        Animation scaleDown = AnimationUtils.loadAnimation(HomeFragment.this.getActivity(), R.anim.scale_down);
+        Animation scaleUp = AnimationUtils.loadAnimation(HomeFragment.this.getActivity(), R.anim.scale_up);
 
         AnimationSet animation = new AnimationSet(false); // change to false
-        animation.addAnimation(fadeIn);
-        animation.addAnimation(fadeOut);
+        animation.addAnimation(scaleDown);
+        animation.addAnimation(scaleUp);
         animation.setRepeatCount(1);
         imageView.setAnimation(animation);
 
         animation.setAnimationListener(new Animation.AnimationListener() {
             public void onAnimationEnd(Animation animation) {
-                if (images.length - 1 > imageIndex) {
-                    animate(imageView, images, imageIndex + 1,forever); //Calls itself until it gets to the end of the array
-                }
-                else {
-                    if (forever == true){
-                        animate(imageView, images, 0,forever);  //Calls itself to start the animation all over again in a loop if forever = true
-                    }
+                if (forever){
+                    animate(imageView, forever);  //Calls itself to start the animation all over again in a loop if forever = true
                 }
             }
             public void onAnimationRepeat(Animation animation) {
