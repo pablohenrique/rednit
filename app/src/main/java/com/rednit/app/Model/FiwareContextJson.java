@@ -1,6 +1,7 @@
 package com.rednit.app.Model;
 
 import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.ModelContainer;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
@@ -14,6 +15,7 @@ import org.json.JSONObject;
  * Created by pablohenrique on 7/20/15.
  */
 @Table(databaseName = RednitDatabase.NAME)
+@ModelContainer
 public class FiwareContextJson extends BaseModel {
 
     @Column

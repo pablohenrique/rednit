@@ -23,7 +23,9 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.raizlabs.android.dbflow.structure.container.JSONModel;
 import com.rednit.app.Controller.DownloadImageTask;
+import com.rednit.app.Model.FiwareContextJson;
 import com.rednit.app.R;
 import com.rednit.app.Util.CustomJSONArrayRequest;
 import com.rednit.app.Util.CustomJSONObjectRequest;
@@ -111,10 +113,13 @@ public class HomeFragment
         String url = "http://54.88.31.160:3000/api/accounts";
 //        CustomJSONObjectRequest jsonRequest = new CustomJSONObjectRequest(Request.Method.GET, url, new JSONObject(), HomeFragment.this, HomeFragment.this);
         CustomJSONArrayRequest jsonRequest = new CustomJSONArrayRequest(Request.Method.GET, url, new JSONObject(), HomeFragment.this, HomeFragment.this);
-        jsonRequest.setTag( HomeFragment.this.getClass().getName() );
+        jsonRequest.setTag(HomeFragment.this.getClass().getName());
 
         new DownloadImageTask((ImageView) rootView.findViewById(R.id.home_img_profile_circle) ).execute("https://fbcdn-sphotos-c-a.akamaihd.net/hphotos-ak-xpa1/v/t1.0-9/12227650_10205587203534851_6504001002331463838_n.jpg?oh=25879438ca96cb696538117703ad719a&oe=56EFDA46&__gda__=1458285392_15704eb827c39039edcecd7f0821ac94");
         mQueue.add(jsonRequest);
+
+        JSONModel jsonModel = new JSONModel<FiwareContextJson>(new JSONObject(), FiwareContextJson.class);
+//        jsonModel.save();
 
         return rootView;
     }

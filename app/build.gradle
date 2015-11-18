@@ -31,8 +31,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_6
-        targetCompatibility JavaVersion.VERSION_1_6
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
     buildTypes {
         release {
@@ -70,7 +70,7 @@ dependencies {
     apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
     compile 'com.raizlabs.android:DBFlow-Core:2.2.1'
     compile 'com.raizlabs.android:DBFlow:2.2.1'
-//    compile 'com.github.nkzawa:socket.io-client:0.3.0'
+    //    compile 'com.github.nkzawa:socket.io-client:0.3.0'
     compile 'io.socket:socket.io-client:0.6.1'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.9.5'
