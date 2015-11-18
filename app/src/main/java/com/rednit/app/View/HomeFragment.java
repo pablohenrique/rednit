@@ -15,9 +15,13 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.rednit.app.R;
+import com.rednit.app.Util.CustomJSONObjectRequest;
+import com.rednit.app.Util.CustomVolleyRequestQueue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,8 +35,10 @@ import org.json.JSONObject;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment implements Response.Listener,
-        Response.ErrorListener{
+public class HomeFragment
+        extends Fragment
+        implements Response.Listener,
+        Response.ErrorListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 //    private static final String ARG_PARAM1 = "param1";
@@ -45,6 +51,7 @@ public class HomeFragment extends Fragment implements Response.Listener,
     private ImageView largeCircle;
     private ImageView mediumCircle;
     private ImageView smallCircle;
+    private RequestQueue mQueue;
 
     private OnFragmentInteractionListener mListener;
 
@@ -94,6 +101,13 @@ public class HomeFragment extends Fragment implements Response.Listener,
 //        animate(largeCircle, empty, 0, true);
 //        animate(mediumCircle, empty, 0, true);
 //        animate(smallCircle, empty, 0, true);
+
+
+        mQueue = CustomVolleyRequestQueue.prepareInstance(HomeFragment.this.getActivity()).getRequestQueue();
+        String url = "http://54.88.31.160:3000/api/accounts";
+        CustomJSONObjectRequest jsonRequest = new CustomJSONObjectRequest(Request.Method.GET, url, new JSONObject(), HomeFragment.this, HomeFragment.this);
+        jsonRequest.setTag( HomeFragment.this.getClass().getName() );
+        mQueue.add(jsonRequest);
 
         return rootView;
     }

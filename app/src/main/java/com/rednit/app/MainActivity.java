@@ -97,8 +97,9 @@ public class MainActivity extends ActionBarActivity
         utils = new Util();
         myFacebook = new MyFacebook();
 
-        this.facebookSetup();
         this.twitterSetup();
+        twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+//        this.facebookSetup();
     }
 
     private void twitterSetup() {
@@ -313,7 +314,6 @@ public class MainActivity extends ActionBarActivity
 
     private void facebookSetup() {
         loginButton = (LoginButton) findViewById(R.id.main_btn_facebook);
-//        AccessToken.refreshCurrentAccessTokenAsync();
 
         if (AccessToken.getCurrentAccessToken() == null) {
             if (!utils.checkConnection(MainActivity.this)) {
@@ -351,31 +351,22 @@ public class MainActivity extends ActionBarActivity
             if (profile != null) {
                 myFacebook.extractLikes(profile.getId(), "");
             }
-            gps = new MyLocation(MainActivity.this);
-
-            if (gps.canGetLocation()) {
-
-                double latitude = gps.getLatitude();
-                double longitude = gps.getLongitude();
-                try {
-//                    putDataToServer(new FiwareContextJson(profile.getId()).locationJson(latitude, longitude));
-                    myFacebook.putDataToServer(new FiwareContextJson(profile.getId()).locationJson(latitude, longitude));
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
-
-                // \n is for new line
-                //Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
-            } else {
-                // can't get location
-                // GPS or Network is not enabled
-                // Ask user to enable GPS/network in settings
-                gps.showSettingsAlert();
-            }
+//            gps = new MyLocation(MainActivity.this);
+//
+//            if (gps.canGetLocation()) {
+//
+//                double latitude = gps.getLatitude();
+//                double longitude = gps.getLongitude();
+//                try {
+//                    myFacebook.putDataToServer(new FiwareContextJson(profile.getId()).locationJson(latitude, longitude));
+//                } catch (Throwable throwable) {
+//                    throwable.printStackTrace();
+//                }
+//            } else {
+//                gps.showSettingsAlert();
+//            }
             callLoginLoadingScreen();
         }
-
-
     }
 
     public static void facebookLogOut() {
