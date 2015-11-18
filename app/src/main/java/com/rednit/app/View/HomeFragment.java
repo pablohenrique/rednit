@@ -1,14 +1,38 @@
 package com.rednit.app.View;
 
 import android.app.Activity;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.raizlabs.android.dbflow.structure.container.JSONModel;
+import com.rednit.app.Controller.DownloadImageTask;
+import com.rednit.app.Model.FiwareContextJson;
 import com.rednit.app.R;
+import com.rednit.app.Util.CustomJSONArrayRequest;
+import com.rednit.app.Util.CustomJSONObjectRequest;
+import com.rednit.app.Util.CustomVolleyRequestQueue;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 /**
@@ -19,7 +43,10 @@ import com.rednit.app.R;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment
+        extends Fragment
+        implements Response.Listener,
+        Response.ErrorListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 //    private static final String ARG_PARAM1 = "param1";
@@ -28,6 +55,11 @@ public class HomeFragment extends Fragment {
     // TODO: Rename and change types of parameters
 //    private String mParam1;
 //    private String mParam2;
+
+    private ImageView largeCircle;
+    private ImageView mediumCircle;
+    private ImageView smallCircle;
+    private RequestQueue mQueue;
 
     private OnFragmentInteractionListener mListener;
 
@@ -69,6 +101,26 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_home, container, false);
+        largeCircle = (ImageView) rootView.findViewById(R.id.home_img_large_circle);
+        mediumCircle = (ImageView) rootView.findViewById(R.id.home_img_medium_circle);
+        smallCircle = (ImageView) rootView.findViewById(R.id.home_img_small_circle);
+
+        animate(largeCircle, true);
+        animate(mediumCircle, true);
+        animate(smallCircle, true);
+
+        mQueue = CustomVolleyRequestQueue.prepareInstance(HomeFragment.this.getActivity()).getRequestQueue();
+        String url = "http://54.88.31.160:3000/api/accounts";
+//        CustomJSONObjectRequest jsonRequest = new CustomJSONObjectRequest(Request.Method.GET, url, new JSONObject(), HomeFragment.this, HomeFragment.this);
+        CustomJSONArrayRequest jsonRequest = new CustomJSONArrayRequest(Request.Method.GET, url, new JSONObject(), HomeFragment.this, HomeFragment.this);
+        jsonRequest.setTag(HomeFragment.this.getClass().getName());
+
+        new DownloadImageTask((ImageView) rootView.findViewById(R.id.home_img_profile_circle) ).execute("https://fbcdn-sphotos-c-a.akamaihd.net/hphotos-ak-xpa1/v/t1.0-9/12227650_10205587203534851_6504001002331463838_n.jpg?oh=25879438ca96cb696538117703ad719a&oe=56EFDA46&__gda__=1458285392_15704eb827c39039edcecd7f0821ac94");
+        mQueue.add(jsonRequest);
+
+        JSONModel jsonModel = new JSONModel<FiwareContextJson>(new JSONObject(), FiwareContextJson.class);
+//        jsonModel.save();
+
         return rootView;
     }
 
@@ -96,6 +148,20 @@ public class HomeFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onErrorResponse(VolleyError error) {
+        Toast.makeText(HomeFragment.this.getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onResponse(Object response) {
+        try{
+            Toast.makeText(HomeFragment.this.getActivity(), ((JSONObject)response).toString(), Toast.LENGTH_SHORT).show();
+        } catch (Exception ex){
+            Toast.makeText(HomeFragment.this.getActivity(), response.toString(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -109,6 +175,32 @@ public class HomeFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+    }
+
+    private void animate(final ImageView imageView, final boolean forever) {
+
+        Animation scaleDown = AnimationUtils.loadAnimation(HomeFragment.this.getActivity(), R.anim.scale_down);
+        Animation scaleUp = AnimationUtils.loadAnimation(HomeFragment.this.getActivity(), R.anim.scale_up);
+
+        AnimationSet animation = new AnimationSet(false); // change to false
+        animation.addAnimation(scaleDown);
+        animation.addAnimation(scaleUp);
+        animation.setRepeatCount(1);
+        imageView.setAnimation(animation);
+
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            public void onAnimationEnd(Animation animation) {
+                if (forever){
+                    animate(imageView, forever);  //Calls itself to start the animation all over again in a loop if forever = true
+                }
+            }
+            public void onAnimationRepeat(Animation animation) {
+                // TODO Auto-generated method stub
+            }
+            public void onAnimationStart(Animation animation) {
+                // TODO Auto-generated method stub
+            }
+        });
     }
 
 }

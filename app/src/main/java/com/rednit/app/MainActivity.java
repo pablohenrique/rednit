@@ -65,68 +65,45 @@ public class MainActivity extends ActionBarActivity
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         ResultListFragment.OnFragmentInteractionListener,
-        HomeFragment.OnFragmentInteractionListener{
-
-    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
-    private static final String TWITTER_KEY = "MEhrB2Z8cdbUP0P97vnrbFjZy";
-    private static final String TWITTER_SECRET = "ULgjeTVKOhAmpUh8zA9guMUU243kqTwj095TR2o6cZnNNeYGww";
-
+        HomeFragment.OnFragmentInteractionListener {
 
     private Util utils;
-
-    /*TWITTER VARIABLES*/
     private TwitterLoginButton twitterLoginButton;
-
-    /*FACEBOOK VARIABLES*/
     private List<String> permissions = Arrays.asList("public_profile", "email", "user_likes");
     private CallbackManager callbackManager;
-    private AccessTokenTracker accessTokenTracker;
-    private ProfileTracker profileTracker;
     private LoginButton loginButton;
-
-    /*GOOGLE VARIABLES*/
-    private static GoogleApiClient mGoogleApiClient;
-    private static final int RC_SIGN_IN = 0;
-    private boolean mSignInClicked;
-    private boolean mIntentInProgress;
-
-    private String likedPages;
+    private MyFacebook myFacebook;
+    //    private AccessTokenTracker accessTokenTracker;
+//    private ProfileTracker profileTracker;
     MyLocation gps;
 
-    private MyFacebook myFacebook;
+    private String likedPages;
+    private static final String TWITTER_KEY = "MEhrB2Z8cdbUP0P97vnrbFjZy";
+    private static final String TWITTER_SECRET = "ULgjeTVKOhAmpUh8zA9guMUU243kqTwj095TR2o6cZnNNeYGww";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(MainActivity.this);
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
-        FacebookSdk.sdkInitialize(this.getApplicationContext());
+
         setContentView(R.layout.activity_main);
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
         FlowManager.init(this);
 
         callbackManager = CallbackManager.Factory.create();
-
         utils = new Util();
-        //        this.createDefaults();
-
-        findViewById(R.id.main_btn_google).setOnClickListener(this);
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Plus.API, Plus.PlusOptions.builder().build())
-                .addScope(Plus.SCOPE_PLUS_LOGIN).build();
-
-        //        facebookLogOut();
-        googleLogOut();
-
         myFacebook = new MyFacebook();
 
-        this.facebookSetup();
-//        https://docs.fabric.io/android/twitter/access-rest-api.html
-//        https://dev.twitter.com/node/1180/twittercore
-//        https://developers.facebook.com/apps/731261337003089/settings/
+        this.twitterSetup();
+        twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+//        this.facebookSetup();
+        this.callLoginLoadingScreen();
+    }
+
+    private void twitterSetup() {
         twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
         twitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override
@@ -150,7 +127,7 @@ public class MainActivity extends ActionBarActivity
                 // Can also use Twitter directly: Twitter.getApiClient()
 
                 //Obtem os tweets favoritos
-                FavoriteService favoriteService =  twitterApiClient.getFavoriteService();
+                FavoriteService favoriteService = twitterApiClient.getFavoriteService();
                 favoriteService.list(session.getUserId(), null, null, null, null, null, new Callback<List<Tweet>>() {
                     @Override
                     public void success(Result<List<Tweet>> result) {
@@ -215,11 +192,9 @@ public class MainActivity extends ActionBarActivity
                 // Do something on failure
             }
         });
-
-
     }
 
-    public void postToServer(final String urlParam, final JSONObject jdata){
+    public void postToServer(final String urlParam, final JSONObject jdata) {
         new Thread(new Runnable() {
             public void run() {
                 URL url = null;
@@ -230,7 +205,7 @@ public class MainActivity extends ActionBarActivity
                     conn.setRequestMethod("POST");
                     conn.setDoOutput(true);
 
-                    System.out.println("Dado: "+jdata.get("name") );
+                    System.out.println("Dado: " + jdata.get("name"));
 
                     OutputStream outputStream = conn.getOutputStream();
                     outputStream.write(jdata.toString().getBytes());
@@ -239,20 +214,6 @@ public class MainActivity extends ActionBarActivity
                     String serverResponseMessage = conn.getResponseMessage();
 
                     Log.i("HTTP Response is : ", serverResponseMessage + ": " + serverResponseCode);
-
-                    //Get Response. If you need to get a response you can uncomment this code below
-//                    if(serverResponseCode == HttpURLConnection.HTTP_OK){
-//                        InputStream is = conn.getInputStream();
-//                        BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-//                        String line;
-//                        StringBuffer response = new StringBuffer();
-//                        while ((line = rd.readLine()) != null) {
-//                            response.append(line);
-//                            response.append('\r');
-//                            Log.i("Line: ", line);
-//                        }
-//                        rd.close();
-//                    }
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (ProtocolException e) {
@@ -269,30 +230,15 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
-        //        loadingTextView.setText(R.string.main_txt_loading);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //Google
-        if (requestCode == RC_SIGN_IN) {
-            if (resultCode != RESULT_OK) {
-                mSignInClicked = false;
-            }
-            mIntentInProgress = false;
-            if (!mGoogleApiClient.isConnected()) {
-                mGoogleApiClient.reconnect();
-            }
-        }
         //Facebook
-        else {
-            callbackManager.onActivityResult(requestCode, resultCode, data);
-        }
-
-
+        callbackManager.onActivityResult(requestCode, resultCode, data);
         //Twitter
         twitterLoginButton.onActivityResult(requestCode, resultCode, data);
     }
@@ -300,27 +246,11 @@ public class MainActivity extends ActionBarActivity
     //Google
     @Override
     public void onConnectionFailed(ConnectionResult result) {
-        if (!mIntentInProgress) {
-            if (mSignInClicked && result.hasResolution()) {
-                // The user has already clicked 'sign-in' so we attempt to resolve all
-                // errors until the user is signed in, or they cancel.
-                try {
-                    result.startResolutionForResult(this, RC_SIGN_IN);
-                    mIntentInProgress = true;
-                } catch (IntentSender.SendIntentException e) {
-                    // The intent was canceled before it was sent.  Return to the default
-                    // state and attempt to connect to get an updated ConnectionResult.
-                    mIntentInProgress = false;
-                    mGoogleApiClient.connect();
-                }
-            }
-        }
     }
 
     //Google
     @Override
     public void onConnected(Bundle connectionHint) {
-        mSignInClicked = false;
         callLoginLoadingScreen();
     }
 
@@ -345,19 +275,19 @@ public class MainActivity extends ActionBarActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
-        }else{
+        } else {
             if (id == R.id.action_fb_logout) {
                 facebookLogOut();
                 Fragment fg = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-                if(fg != null){
+                if (fg != null) {
                     getSupportFragmentManager().beginTransaction().
                             remove(fg).commit();
                 }
-            }else{
+            } else {
                 if (id == R.id.action_twitter_logout) {
                     twitterLogOut();
                     Fragment fg = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-                    if(fg != null){
+                    if (fg != null) {
                         getSupportFragmentManager().beginTransaction().
                                 remove(fg).commit();
                     }
@@ -381,26 +311,13 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.main_btn_google && !mGoogleApiClient.isConnecting()) {
-            mSignInClicked = true;
-            mGoogleApiClient.connect();
-        }
-        //        if (view.getId() == R.id.main_btn_google) {
-        else{
-            if (mGoogleApiClient.isConnected()) {
-                Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-                mGoogleApiClient.disconnect();
-                mGoogleApiClient.connect();
-            }
-        }
     }
 
-    private void facebookSetup(){
+    private void facebookSetup() {
         loginButton = (LoginButton) findViewById(R.id.main_btn_facebook);
-        AccessToken.refreshCurrentAccessTokenAsync();
 
-        if(AccessToken.getCurrentAccessToken() == null) {
-            if(!utils.checkConnection(MainActivity.this)) {
+        if (AccessToken.getCurrentAccessToken() == null) {
+            if (!utils.checkConnection(MainActivity.this)) {
                 loginButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -425,90 +342,32 @@ public class MainActivity extends ActionBarActivity
                     @Override
                     public void onError(FacebookException exception) {
                         System.out.println("Facebook Error");
+                        AccessToken.refreshCurrentAccessTokenAsync();
                     }
                 });
             }
         } else {
 
             Profile profile = Profile.getCurrentProfile();
-//            System.out.println(profile.getId());
-//            //            callLoginLoadingScreen();
-//
-//            //            /* make the API call */
-//            new GraphRequest(
-//                             AccessToken.getCurrentAccessToken(),
-//                             "/" + profile.getId() + "/likes",
-//                             null,
-//                             HttpMethod.GET,
-//                             new GraphRequest.Callback() {
-//                public void onCompleted(GraphResponse response) {
-//                    if(response != null) {
-//                        try {
-//                            JSONObject json = response.getJSONObject();
-//                            System.out.println(json.toString());
-//                            JSONArray data = json.getJSONArray("data");
-//                            setLikedPages(data.toString());
-//                            extractLikes(profile.getId(), json.getJSONObject("paging").getJSONObject("cursors").getString("after"));
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//            }
-//                             ).executeAsync();
-
-
-
-//            extractLikes(profile.getId(), "");
-            if(profile != null) {
+            if (profile != null) {
                 myFacebook.extractLikes(profile.getId(), "");
             }
-            gps = new MyLocation(MainActivity.this);
-
-            if(gps.canGetLocation()){
-
-                double latitude = gps.getLatitude();
-                double longitude = gps.getLongitude();
-                try {
-//                    putDataToServer(new FiwareContextJson(profile.getId()).locationJson(latitude, longitude));
-                    myFacebook.putDataToServer(new FiwareContextJson(profile.getId()).locationJson(latitude, longitude));
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
-
-                // \n is for new line
-                //Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
-            }else{
-                // can't get location
-                // GPS or Network is not enabled
-                // Ask user to enable GPS/network in settings
-                gps.showSettingsAlert();
-            }
-
-
-            //
-            //            Bundle parameters = new Bundle();
-            //            parameters.putString("fields", "id,name,link");
-            //
-            //            GraphRequest graphRequest = new GraphRequest(
-            //                    AccessToken.getCurrentAccessToken(),
-            //                    profile.getId(),
-            //                    null,
-            //                    HttpMethod.GET,
-            //                    new GraphRequest.Callback() {
-            //                        public void onCompleted(GraphResponse response) {
-            //                            if(response != null)
-            //                                System.out.println(response.toString());
-            //                        }
-            //                    }
-            //            );
-            //            graphRequest.setParameters(parameters);
-            //            graphRequest.executeAsync();
-
+//            gps = new MyLocation(MainActivity.this);
+//
+//            if (gps.canGetLocation()) {
+//
+//                double latitude = gps.getLatitude();
+//                double longitude = gps.getLongitude();
+//                try {
+//                    myFacebook.putDataToServer(new FiwareContextJson(profile.getId()).locationJson(latitude, longitude));
+//                } catch (Throwable throwable) {
+//                    throwable.printStackTrace();
+//                }
+//            } else {
+//                gps.showSettingsAlert();
+//            }
             callLoginLoadingScreen();
         }
-
-
     }
 
     public static void facebookLogOut() {
@@ -516,29 +375,23 @@ public class MainActivity extends ActionBarActivity
         Profile.setCurrentProfile(null);
     }
 
-    public static void googleLogOut(){
-        if (mGoogleApiClient.isConnected()) {
-            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-            mGoogleApiClient.disconnect();
-            mGoogleApiClient.connect();
-        }
-    }
-
-    public static boolean facebookIsConnected(){
+    public static boolean facebookIsConnected() {
         return (AccessToken.getCurrentAccessToken() != null);
     }
 
-    public static boolean googleIsConnected() { return mGoogleApiClient.isConnected(); }
+    public static boolean hasSocialConnection() {
+        return (facebookIsConnected());
+    }
 
-    public static boolean hasSocialConnection(){ return (facebookIsConnected() || googleIsConnected()); }
+    public static String whitchIsConnected() {
+        return facebookIsConnected() ? "facebook" : "twitter";
+    }
 
-    public static String whitchIsConnected(){ return facebookIsConnected() ? "facebook" : "google";}
-
-    private void callLoginLoadingScreen(){
+    private void callLoginLoadingScreen() {
+        twitterLoginButton.setVisibility(View.INVISIBLE);
         getSupportFragmentManager()
                 .beginTransaction()
-//                .add(R.id.fragment_container, new HomeFragment())
-                .add(R.id.fragment_container, new ResultListFragment())
+                .add(R.id.fragment_container, new HomeFragment())
                 .commit();
     }
 
