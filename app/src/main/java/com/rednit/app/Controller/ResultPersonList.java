@@ -2,6 +2,10 @@ package com.rednit.app.Controller;
 
 import com.rednit.app.Model.ResultPerson;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +17,12 @@ public class ResultPersonList {
     private ArrayList<ResultPerson> personArrayList = new ArrayList<ResultPerson>();
 
     public ResultPersonList() { }
+
+    public void loadFromJSONArray(JSONArray jsonArray) throws JSONException {
+        for(int i = 0; i < jsonArray.length(); i++){
+            add(new ResultPerson((JSONObject) jsonArray.get(i)));
+        }
+    }
 
     public void add(ResultPerson resultPerson){
         personArrayList.add(resultPerson);
@@ -65,10 +75,10 @@ public class ResultPersonList {
                 "13141516"
         };
         String[] urls = {
-                "http://www.mouserunner.com/images/FOwebsite_SinglePreview.png",
-                "http://www.mouserunner.com/images/FOwebsite_SinglePreview.png",
-                "http://www.mouserunner.com/images/FOwebsite_SinglePreview.png",
-                "http://www.mouserunner.com/images/FOwebsite_SinglePreview.png"
+                "http://lorempixel.com/200/200/people/6/",
+                "http://lorempixel.com/200/200/people/7/",
+                "http://lorempixel.com/200/200/people/8/",
+                "http://lorempixel.com/200/200/people/9/"
         };
 
         for(int i = 0; i < names.length; i++){

@@ -1,21 +1,15 @@
 package com.rednit.app.View;
 
 import android.app.Activity;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.ScaleAnimation;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -23,15 +17,12 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.raizlabs.android.dbflow.structure.container.JSONModel;
 import com.rednit.app.Controller.DownloadImageTask;
-import com.rednit.app.Model.FiwareContextJson;
 import com.rednit.app.R;
 import com.rednit.app.Util.CustomJSONArrayRequest;
-import com.rednit.app.Util.CustomJSONObjectRequest;
 import com.rednit.app.Util.CustomVolleyRequestQueue;
 
-import org.json.JSONException;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 
@@ -118,7 +109,7 @@ public class HomeFragment
         new DownloadImageTask((ImageView) rootView.findViewById(R.id.home_img_profile_circle) ).execute("https://fbcdn-sphotos-c-a.akamaihd.net/hphotos-ak-xpa1/v/t1.0-9/12227650_10205587203534851_6504001002331463838_n.jpg?oh=25879438ca96cb696538117703ad719a&oe=56EFDA46&__gda__=1458285392_15704eb827c39039edcecd7f0821ac94");
         mQueue.add(jsonRequest);
 
-        JSONModel jsonModel = new JSONModel<FiwareContextJson>(new JSONObject(), FiwareContextJson.class);
+//        JSONModel jsonModel = new JSONModel<FiwareContextJson>(new JSONObject(), FiwareContextJson.class);
 //        jsonModel.save();
 
         return rootView;
@@ -156,7 +147,28 @@ public class HomeFragment
     @Override
     public void onResponse(Object response) {
         try{
-            Toast.makeText(HomeFragment.this.getActivity(), ((JSONObject)response).toString(), Toast.LENGTH_SHORT).show();
+//            if(response instanceof JSONObject){
+//                bundle.putString("jsonobject",((JSONObject)response).toString());
+//                bundle.putInt("index", 0);
+//            } else if(response instanceof JSONArray){
+//                bundle.putString("jsonarray",((JSONArray)response).toString());
+//                bundle.putInt("index",1);
+//            } else {
+//                bundle.putString("object",(response).toString());
+//                bundle.putInt("index",2);
+//            }
+            ResultListFragment resultListFragment = new ResultListFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("jsonarray", ((JSONArray) response).toString());
+            resultListFragment.setArguments(bundle);
+
+            Toast.makeText(HomeFragment.this.getActivity(), response.toString(), Toast.LENGTH_SHORT).show();
+
+            getFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.fragment_container, resultListFragment)
+                    .commit();
+
         } catch (Exception ex){
             Toast.makeText(HomeFragment.this.getActivity(), response.toString(), Toast.LENGTH_SHORT).show();
         }
