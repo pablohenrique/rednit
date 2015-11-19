@@ -18,7 +18,6 @@ import com.rednit.app.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 public class ResultListFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match

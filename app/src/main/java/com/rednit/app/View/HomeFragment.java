@@ -1,21 +1,15 @@
 package com.rednit.app.View;
 
 import android.app.Activity;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.ScaleAnimation;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -23,16 +17,12 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.raizlabs.android.dbflow.structure.container.JSONModel;
 import com.rednit.app.Controller.DownloadImageTask;
-import com.rednit.app.Model.FiwareContextJson;
 import com.rednit.app.R;
 import com.rednit.app.Util.CustomJSONArrayRequest;
-import com.rednit.app.Util.CustomJSONObjectRequest;
 import com.rednit.app.Util.CustomVolleyRequestQueue;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 

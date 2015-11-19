@@ -1,7 +1,6 @@
 package com.rednit.app;
 
 import android.content.Intent;
-import android.content.IntentSender;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -14,21 +13,17 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
-import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.Profile;
-import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.plus.Plus;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.rednit.app.Controller.MyLocation;
-import com.rednit.app.Model.FiwareContextJson;
 import com.rednit.app.Model.MyFacebook;
 import com.rednit.app.Util.MyTwitterApiClient;
 import com.rednit.app.Util.Util;
