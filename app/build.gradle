@@ -24,8 +24,8 @@ android {
 
     defaultConfig {
         applicationId "com.rednit.app"
-        minSdkVersion 14
-        targetSdkVersion 22
+        minSdkVersion 21
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
@@ -71,10 +71,18 @@ dependencies {
     compile 'com.raizlabs.android:DBFlow-Core:2.2.1'
     compile 'com.raizlabs.android:DBFlow:2.2.1'
     //    compile 'com.github.nkzawa:socket.io-client:0.3.0'
-    compile 'io.socket:socket.io-client:0.6.1'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:1.9.5'
-    compile 'junit:junit:4.12'
+    compile('io.socket:socket.io-client:0.6.1') {
+        exclude group: 'org.json', module: 'json'
+    }
+    testCompile('junit:junit:4.12') {
+        exclude group: 'org.json', module: 'json'
+    }
+    testCompile('org.mockito:mockito-core:1.9.5') {
+        exclude group: 'org.json', module: 'json'
+    }
+    compile('junit:junit:4.12') {
+        exclude group: 'org.json', module: 'json'
+    }
     compile('com.twitter.sdk.android:twitter:1.8.0@aar') {
         transitive = true;
     }

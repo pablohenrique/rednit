@@ -1,104 +1,77 @@
 package com.rednit.app.Model;
 
 import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.ModelContainer;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.rednit.app.DAO.RednitDatabase;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.ParseException;
 
 /**
- * Created by pablohenrique on 11/19/15.
+ * Created by pablohenrique on 11/22/15.
  */
-@Table(databaseName = RednitDatabase.NAME)
-@ModelContainer
+//@Table(databaseName = RednitDatabase.NAME)
 public class Accounts {
 
-//    name: String,
-//    loc: { type: [Number], index: '2d' },
-//    email: { type: String, index: true },
-//    photoUrl: String,
-//    accounts: {
-//        facebookAccount: {
-//            facebookId: { type: String, index: true },
-//            likes: [
-//            {
-//                facebookId: { type: String, index: true },
-//                page: {
-//                    type: mongoose.Schema.Types.ObjectId,
-//                            ref: 'Pages',
-//                            index: true
-//                },
-//                instant: Date
-//            }
-//            ],
-//            friends : {
-//                type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Accounts'}],
-//                index: true
-//            }
-//        },
-//        twitterAccount: {
-//            twitterId: { type: Number, index: true },
-//            favorites: {
-//                type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tweets' }],
-//                index: true
-//            },
-//            following: {
-//                type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Accounts'}],
-//                index: true
-//            }
-//        }
+//    @Column
+//    @PrimaryKey(autoincrement = true)
+//    private int id;
+//    @Column
+    private FacebookAccount facebookAccount;
+//    @Column
+    private TwitterAccount twitterAccount;
+    private JSONObject jsonObject;
+
+    private String facebookAttr = "facebookAccount";
+    private String twitterAttr = "twitterAccount";
+
+    public Accounts(JSONObject jsonObject) throws JSONException, ParseException {
+        setFacebookAccount( new FacebookAccount(jsonObject.getJSONObject(facebookAttr)) );
+        setTwitterAccount(new TwitterAccount(jsonObject.getJSONObject(twitterAttr)));
+    }
+
+    public JSONObject toJSON() throws JSONException {
+        if(getJsonObject() == null) {
+            setJsonObject(new JSONObject());
+            getJsonObject().put(facebookAttr, getFacebookAccount().toJSON());
+            getJsonObject().put(twitterAttr, getTwitterAccount().toJSON());
+        }
+        return getJsonObject();
+    }
+
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
 //    }
 
-    @Column
-    private String name;
-    @Column
-    private List<Location> loc;
-    @Column
-    private String email;
-    @Column
-    private String photoUrl;
-    @Column
-    private Accounts accounts;
-
-    public String getName() {
-        return name;
+    public FacebookAccount getFacebookAccount() {
+        return facebookAccount;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFacebookAccount(FacebookAccount facebookAccount) {
+        this.facebookAccount = facebookAccount;
     }
 
-    public List<Location> getLoc() {
-        return loc;
+    public TwitterAccount getTwitterAccount() {
+        return twitterAccount;
     }
 
-    public void setLoc(List<Location> loc) {
-        this.loc = loc;
+    public void setTwitterAccount(TwitterAccount twitterAccount) {
+        this.twitterAccount = twitterAccount;
     }
 
-    public String getEmail() {
-        return email;
+    public JSONObject getJsonObject() {
+        return jsonObject;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhotoUrl() {
-        return photoUrl;
-    }
-
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
-    }
-
-    public Accounts getAccounts() {
-        return accounts;
-    }
-
-    public void setAccounts(Accounts accounts) {
-        this.accounts = accounts;
+    public void setJsonObject(JSONObject jsonObject) {
+        this.jsonObject = jsonObject;
     }
 }

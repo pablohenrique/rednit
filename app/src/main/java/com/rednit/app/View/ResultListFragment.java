@@ -81,6 +81,8 @@ public class ResultListFragment extends Fragment {
 
             resultPersonList.loadFromJSONArray(array);
 
+//            JSONModel jsonModel = new JSONModel<Account>((JSONObject)array.get(0), Account.class);
+
             Log.i("JSONArray", array.toString());
 
             CustomListAdapter adapter = new CustomListAdapter(ResultListFragment.this.getActivity(), resultPersonList);
