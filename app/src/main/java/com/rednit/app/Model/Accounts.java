@@ -5,6 +5,7 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.rednit.app.DAO.RednitDatabase;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,10 +24,23 @@ public class Accounts {
     private FacebookAccount facebookAccount;
 //    @Column
     private TwitterAccount twitterAccount;
+    private JSONObject jsonObject;
+
+    private String facebookAttr = "facebookAccount";
+    private String twitterAttr = "twitterAccount";
 
     public Accounts(JSONObject jsonObject) throws JSONException, ParseException {
-        setFacebookAccount( new FacebookAccount(jsonObject.getJSONObject("facebookAccount")) );
-        setTwitterAccount(new TwitterAccount(jsonObject.getJSONObject("twitterAccount")));
+        setFacebookAccount( new FacebookAccount(jsonObject.getJSONObject(facebookAttr)) );
+        setTwitterAccount(new TwitterAccount(jsonObject.getJSONObject(twitterAttr)));
+    }
+
+    public JSONObject toJSON() throws JSONException {
+        if(getJsonObject() == null) {
+            setJsonObject(new JSONObject());
+            getJsonObject().put(facebookAttr, getFacebookAccount().toJSON());
+            getJsonObject().put(twitterAttr, getTwitterAccount().toJSON());
+        }
+        return getJsonObject();
     }
 
 //    public int getId() {
@@ -51,5 +65,13 @@ public class Accounts {
 
     public void setTwitterAccount(TwitterAccount twitterAccount) {
         this.twitterAccount = twitterAccount;
+    }
+
+    public JSONObject getJsonObject() {
+        return jsonObject;
+    }
+
+    public void setJsonObject(JSONObject jsonObject) {
+        this.jsonObject = jsonObject;
     }
 }

@@ -70,21 +70,45 @@ public class Account extends BaseModel {
 //    @Column
     private String photoUrl;
 //    @Column
-    double[] loc;
-
+    private double[] loc;
     private Accounts accounts;
+    private JSONObject jsonObject;
+
+    private String _idAttr = "_id";
+    private String nameAttr = "name";
+    private String emailAttr = "email";
+    private String photoUrlAttr = "photoUrl";
+    private String locAttr = "loc";
+    private String accountsAttr = "accounts";
 
     public Account(){}
 
     public Account(JSONObject jsonObject) throws JSONException, ParseException {
-        set_id(jsonObject.getString("_id"));
-        setName(jsonObject.getString("name"));
-        setEmail(jsonObject.getString("email"));
-        setPhotoUrl(jsonObject.getString("photoUrl"));
-        JSONArray jsonArray = jsonObject.getJSONArray("loc");
+        set_id(jsonObject.getString(_idAttr));
+        setName(jsonObject.getString(nameAttr));
+        setEmail(jsonObject.getString(emailAttr));
+        setPhotoUrl(jsonObject.getString(photoUrlAttr));
+        JSONArray jsonArray = jsonObject.getJSONArray(locAttr);
         double[] loc = {jsonArray.getDouble(0), jsonArray.getDouble(1)};
         setLoc(loc);
-        setAccounts( new Accounts(jsonObject.getJSONObject("accounts")) );
+        setAccounts(new Accounts(jsonObject.getJSONObject(accountsAttr)));
+    }
+
+    public JSONObject toJSON() throws JSONException {
+        if(getJsonObject() == null) {
+            setJsonObject(new JSONObject());
+            getJsonObject().put(_idAttr, get_id());
+            getJsonObject().put(nameAttr, getName());
+            getJsonObject().put(emailAttr, getEmail());
+            getJsonObject().put(photoUrlAttr, getPhotoUrl());
+
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.put(getLoc()[0]);
+            jsonArray.put(getLoc()[1]);
+            getJsonObject().put(locAttr, getLoc());
+            getJsonObject().put(accountsAttr, getAccounts().toJSON());
+        }
+        return getJsonObject();
     }
 
     public String getName() {
@@ -137,6 +161,14 @@ public class Account extends BaseModel {
 
     public void setAccounts(Accounts accounts) {
         this.accounts = accounts;
+    }
+
+    public JSONObject getJsonObject() {
+        return jsonObject;
+    }
+
+    public void setJsonObject(JSONObject jsonObject) {
+        this.jsonObject = jsonObject;
     }
 
 //    public double[] getLoc() {

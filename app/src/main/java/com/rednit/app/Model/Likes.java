@@ -10,6 +10,7 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.raizlabs.android.dbflow.structure.container.ForeignKeyContainer;
 import com.rednit.app.DAO.RednitDatabase;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,6 +47,11 @@ public class Likes extends BaseModel {
     private Page page;
 //    @Column
     private Date instant;
+    private JSONObject jsonObject;
+
+    private String facebookAttr = "facebookId";
+    private String pageAttr = "page";
+    private String instantAttr = "instant";
 
 //    @ForeignKey(references = {@ForeignKeyReference(columnName = "page", columnType = Long.class, foreignColumnName = "facebookId")}, onDelete = ForeignKeyAction.CASCADE, saveForeignKeyModel = false)
 //    private ForeignKeyContainer<Page> pageContainer;
@@ -53,13 +59,23 @@ public class Likes extends BaseModel {
     public Likes(){}
 
     public Likes(JSONObject jsonObject) throws JSONException, ParseException {
-        setFacebookId(jsonObject.getString("facebookId"));
-        setPage(new Page(jsonObject.getJSONObject("page")));
+        setFacebookId(jsonObject.getString(facebookAttr));
+        setPage(new Page(jsonObject.getJSONObject(pageAttr)));
 
         DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
-        Date date = (Date) format.parse(jsonObject.getString("instant"));
+        Date date = (Date) format.parse(jsonObject.getString(instantAttr));
 
         setInstant(date);
+    }
+
+    public JSONObject toJSON() throws JSONException {
+        if(getJsonObject() == null) {
+            setJsonObject(new JSONObject());
+            getJsonObject().put(facebookAttr, getFacebookId());
+            getJsonObject().put(pageAttr, getPage().toJSON());
+            getJsonObject().put(instantAttr, getInstant().toString());
+        }
+        return getJsonObject();
     }
 
     public String getFacebookId() {
@@ -84,5 +100,13 @@ public class Likes extends BaseModel {
 
     public void setInstant(Date instant) {
         this.instant = instant;
+    }
+
+    public JSONObject getJsonObject() {
+        return jsonObject;
+    }
+
+    public void setJsonObject(JSONObject jsonObject) {
+        this.jsonObject = jsonObject;
     }
 }

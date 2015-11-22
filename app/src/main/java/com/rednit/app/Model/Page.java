@@ -7,6 +7,7 @@ import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.rednit.app.DAO.RednitDatabase;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,13 +26,28 @@ public class Page extends BaseModel {
     private String name;
 //    @Column
     private String about;
+    private JSONObject jsonObject;
+
+    private String facebookAttr = "facebookId";
+    private String nameAttr = "name";
+    private String aboutAttr = "about";
 
     public Page(){}
 
     public Page(JSONObject jsonObject) throws JSONException {
-        setFacebookId(jsonObject.getString("facebookId"));
-        setName(jsonObject.getString("name"));
-        setAbout(jsonObject.getString("about"));
+        setFacebookId(jsonObject.getString(facebookAttr));
+        setName(jsonObject.getString(nameAttr));
+        setAbout(jsonObject.getString(aboutAttr));
+    }
+
+    public JSONObject toJSON() throws JSONException {
+        if(getJsonObject() == null) {
+            setJsonObject(new JSONObject());
+            getJsonObject().put(facebookAttr, getFacebookId());
+            getJsonObject().put(nameAttr, getName());
+            getJsonObject().put(aboutAttr, getAbout());
+        }
+        return getJsonObject();
     }
 
     public String getFacebookId() {
@@ -56,5 +72,13 @@ public class Page extends BaseModel {
 
     public void setAbout(String about) {
         this.about = about;
+    }
+
+    public JSONObject getJsonObject() {
+        return jsonObject;
+    }
+
+    public void setJsonObject(JSONObject jsonObject) {
+        this.jsonObject = jsonObject;
     }
 }

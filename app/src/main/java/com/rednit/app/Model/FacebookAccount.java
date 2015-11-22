@@ -45,14 +45,32 @@ public class FacebookAccount extends BaseModel {
 //    @Column
     private String facebookId;
 //    @Column
-    List<Likes> likes;
+    private List<Likes> likes;
 //    @Column
-    List<Account> friends;
+    private List<Account> friends;
+    private JSONObject jsonObject;
+
+    private String facebookAttr = "facebookId";
+    private String likesAttr = "likes";
+    private String friendsAttr = "friends";
+
 
     public FacebookAccount(){}
 
-    public FacebookAccount(JSONObject jsonObject) throws JSONException {
-        setFacebookId(jsonObject.getString("facebookId"));
+    public FacebookAccount(JSONObject jsonObject) throws JSONException, ParseException {
+        setFacebookId(jsonObject.getString(facebookAttr));
+        setLikes(jsonObject.getJSONArray(likesAttr));
+        setLikes(jsonObject.getJSONArray(friendsAttr));
+    }
+
+    public JSONObject toJSON() throws JSONException {
+        if(getJsonObject() == null) {
+            setJsonObject(new JSONObject());
+            getJsonObject().put(facebookAttr, getFacebookId());
+            getJsonObject().put(likesAttr, getLikesJSONArray());
+            getJsonObject().put(friendsAttr, getFriendsJSONArray());
+        }
+        return getJsonObject();
     }
 
     public String getFacebookId() {
@@ -69,6 +87,14 @@ public class FacebookAccount extends BaseModel {
 //            likes = new Select().from(Likes.class).where(Condition.column(Likes$Table.FACEBOOKID).eq(this.getFacebookId())).queryList();
 //        }
         return likes;
+    }
+
+    public JSONArray getLikesJSONArray() throws JSONException {
+        JSONArray jsonArray = new JSONArray();
+        for(Likes likes : getLikes()){
+            jsonArray.put(likes.toJSON());
+        }
+        return jsonArray;
     }
 
     public void setLikes(List<Likes> likes) {
@@ -92,7 +118,23 @@ public class FacebookAccount extends BaseModel {
         return friends;
     }
 
+    public JSONArray getFriendsJSONArray() throws JSONException {
+        JSONArray jsonArray = new JSONArray();
+        for(Account account : getFriends()){
+            jsonArray.put(account.toJSON());
+        }
+        return jsonArray;
+    }
+
     public void setFriends(List<Account> friends) {
         this.friends = friends;
+    }
+
+    public JSONObject getJsonObject() {
+        return jsonObject;
+    }
+
+    public void setJsonObject(JSONObject jsonObject) {
+        this.jsonObject = jsonObject;
     }
 }

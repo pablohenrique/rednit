@@ -7,6 +7,7 @@ import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.rednit.app.DAO.RednitDatabase;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,17 +32,32 @@ public class Favorites extends BaseModel {
     private String text;
 //    @Column
     private Date createdAt;
+    private JSONObject jsonObject;
+
+    private String twitterAttr = "twitterId";
+    private String textAttr = "text";
+    private String createdAtAttr = "createdAt";
 
     public Favorites(){}
 
     public Favorites(JSONObject jsonObject) throws JSONException, ParseException {
-        setTwitterId(jsonObject.getInt("twitterId"));
-        setText(jsonObject.getString("text"));
+        setTwitterId(jsonObject.getInt(twitterAttr));
+        setText(jsonObject.getString(textAttr));
 
         DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
-        Date date = (Date) format.parse(jsonObject.getString("createdAt"));
+        Date date = (Date) format.parse(jsonObject.getString(createdAtAttr));
 
         setCreatedAt(date);
+    }
+
+    public JSONObject toJSON() throws JSONException {
+        if(getJsonObject() == null) {
+            setJsonObject(new JSONObject());
+            getJsonObject().put(twitterAttr, getTwitterId());
+            getJsonObject().put(textAttr, getText());
+            getJsonObject().put(createdAtAttr, getCreatedAt().toString());
+        }
+        return getJsonObject();
     }
 
     public Integer getTwitterId() {
@@ -66,5 +82,13 @@ public class Favorites extends BaseModel {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public JSONObject getJsonObject() {
+        return jsonObject;
+    }
+
+    public void setJsonObject(JSONObject jsonObject) {
+        this.jsonObject = jsonObject;
     }
 }

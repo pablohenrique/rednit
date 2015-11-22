@@ -36,13 +36,28 @@ public class TwitterAccount extends BaseModel {
     private List<Favorites> favorites;
 //    @Column
     private List<Account> following;
+    private JSONObject jsonObject;
+
+    private String twitterAttr = "twitterId";
+    private String favoritesAttr = "favorites";
+    private String followingAttr = "following";
 
     public TwitterAccount(){}
 
     public TwitterAccount(JSONObject jsonObject) throws JSONException, ParseException {
-        setTwitterId(jsonObject.getInt("twitterId"));
-        setFavorites(jsonObject.getJSONArray("favorites"));
-        setFollowing(jsonObject.getJSONArray("following"));
+        setTwitterId(jsonObject.getInt(twitterAttr));
+        setFavorites(jsonObject.getJSONArray(favoritesAttr));
+        setFollowing(jsonObject.getJSONArray(followingAttr));
+    }
+
+    public JSONObject toJSON() throws JSONException {
+        if(getJsonObject() == null) {
+            setJsonObject(new JSONObject());
+            getJsonObject().put(twitterAttr, getTwitterId());
+            getJsonObject().put(favoritesAttr, getFavoritesJSONArray());
+            getJsonObject().put(followingAttr, getFollowingJSONArray());
+        }
+        return getJsonObject();
     }
 
     public Integer getTwitterId() {
@@ -55,6 +70,14 @@ public class TwitterAccount extends BaseModel {
 
     public List<Favorites> getFavorites() {
         return favorites;
+    }
+
+    public JSONArray getFavoritesJSONArray() throws JSONException {
+        JSONArray jsonArray = new JSONArray();
+        for(Favorites favorites : getFavorites()){
+            jsonArray.put(favorites.toJSON());
+        }
+        return jsonArray;
     }
 
     public void setFavorites(ArrayList<Favorites> favorites) {
@@ -73,6 +96,14 @@ public class TwitterAccount extends BaseModel {
         return following;
     }
 
+    public JSONArray getFollowingJSONArray() throws JSONException {
+        JSONArray jsonArray = new JSONArray();
+        for(Account following : getFollowing()){
+            jsonArray.put(following.toJSON());
+        }
+        return jsonArray;
+    }
+
     public void setFollowing(ArrayList<Account> following) {
         this.following = following;
     }
@@ -83,5 +114,13 @@ public class TwitterAccount extends BaseModel {
             favorites.add( new Favorites(jsonArray.getJSONObject(i)) );
         }
         setFollowing(following);
+    }
+
+    public JSONObject getJsonObject() {
+        return jsonObject;
+    }
+
+    public void setJsonObject(JSONObject jsonObject) {
+        this.jsonObject = jsonObject;
     }
 }
