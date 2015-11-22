@@ -1,18 +1,27 @@
 package com.rednit.app.Model;
 
 import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.ForeignKey;
+import com.raizlabs.android.dbflow.annotation.ForeignKeyReference;
 import com.raizlabs.android.dbflow.annotation.ModelContainer;
+import com.raizlabs.android.dbflow.annotation.OneToMany;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.Select;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 import com.rednit.app.DAO.RednitDatabase;
 
-import java.util.ArrayList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-/**
- * Created by pablohenrique on 11/19/15.
- */
-@Table(databaseName = RednitDatabase.NAME)
-@ModelContainer
-public class FacebookAccount {
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+
+//@Table(databaseName = RednitDatabase.NAME)
+//@ModelContainer
+public class FacebookAccount extends BaseModel {
 
 //    facebookAccount: {
 //        facebookId: { type: String, index: true },
@@ -28,17 +37,23 @@ public class FacebookAccount {
 //        }
 //        ],
 //        friends : {
-//            type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Accounts'}],
+//            type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Account'}],
 //            index: true
 //        }
 //    }
 
-    @Column
+//    @Column
     private String facebookId;
-    @Column
-    private ArrayList<Likes> likes;
-    @Column
-    private ArrayList<Accounts> friends;
+//    @Column
+    List<Likes> likes;
+//    @Column
+    List<Account> friends;
+
+    public FacebookAccount(){}
+
+    public FacebookAccount(JSONObject jsonObject) throws JSONException {
+        setFacebookId(jsonObject.getString("facebookId"));
+    }
 
     public String getFacebookId() {
         return facebookId;
@@ -48,19 +63,36 @@ public class FacebookAccount {
         this.facebookId = facebookId;
     }
 
-    public ArrayList<Likes> getLikes() {
+//    @OneToMany(methods = {OneToMany.Method.ALL}, variableName = "likes")
+    public List<Likes> getLikes() {
+//        if(likes == null){
+//            likes = new Select().from(Likes.class).where(Condition.column(Likes$Table.FACEBOOKID).eq(this.getFacebookId())).queryList();
+//        }
         return likes;
     }
 
-    public void setLikes(ArrayList<Likes> likes) {
+    public void setLikes(List<Likes> likes) {
         this.likes = likes;
     }
 
-    public ArrayList<Accounts> getFriends() {
+    public void setLikes(JSONArray likes) throws JSONException, ParseException {
+        ArrayList<Likes> myLikes = new ArrayList<>();
+        for(int i = 0; i < likes.length(); i++){
+            myLikes.add(new Likes(likes.getJSONObject(i)));
+        }
+        setLikes(myLikes);
+    }
+
+//    @OneToMany(methods = {OneToMany.Method.ALL}, variableName = "friends")
+    public List<Account> getFriends() {
+        if(friends == null){
+//            friends = new Select().from(Account.class).where(Condition.column(Account$Table._ID).eq(this.getFacebookId())).queryList();
+            friends = new ArrayList<Account>();
+        }
         return friends;
     }
 
-    public void setFriends(ArrayList<Accounts> friends) {
+    public void setFriends(List<Account> friends) {
         this.friends = friends;
     }
 }

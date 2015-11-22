@@ -15,7 +15,7 @@ import org.json.JSONObject;
  * Created by pablohenrique on 7/20/15.
  */
 @Table(databaseName = RednitDatabase.NAME)
-@ModelContainer
+//@ModelContainer
 public class FiwareContextJson extends BaseModel {
 
     @Column
