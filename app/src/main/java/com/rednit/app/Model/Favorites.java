@@ -27,6 +27,7 @@ public class Favorites extends BaseModel {
 
 //    @Column
 //    @PrimaryKey
+    private String _id = "";
     private Integer twitterId;
 //    @Column
     private String text;
@@ -34,6 +35,7 @@ public class Favorites extends BaseModel {
     private Date createdAt;
     private JSONObject jsonObject;
 
+    private String _idAttr = "_id";
     private String twitterAttr = "twitterId";
     private String textAttr = "text";
     private String createdAtAttr = "createdAt";
@@ -41,6 +43,7 @@ public class Favorites extends BaseModel {
     public Favorites(){}
 
     public Favorites(JSONObject jsonObject) throws JSONException, ParseException {
+        set_id(jsonObject.getString(_idAttr));
         setTwitterId(jsonObject.getInt(twitterAttr));
         setText(jsonObject.getString(textAttr));
 
@@ -53,6 +56,9 @@ public class Favorites extends BaseModel {
     public JSONObject toJSON() throws JSONException {
         if(getJsonObject() == null) {
             setJsonObject(new JSONObject());
+            if(!get_id().equals("")){
+                getJsonObject().put(_idAttr,get_id());
+            }
             getJsonObject().put(twitterAttr, getTwitterId());
             getJsonObject().put(textAttr, getText());
             getJsonObject().put(createdAtAttr, getCreatedAt().toString());
@@ -90,5 +96,13 @@ public class Favorites extends BaseModel {
 
     public void setJsonObject(JSONObject jsonObject) {
         this.jsonObject = jsonObject;
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
     }
 }

@@ -21,13 +21,15 @@ public class Page extends BaseModel {
 
 //    @Column
 //    @PrimaryKey
-    String facebookId;
+    private String _id = "";
+    private String facebookId;
 //    @Column
     private String name;
 //    @Column
     private String about;
     private JSONObject jsonObject;
 
+    private String _idAttr = "_id";
     private String facebookAttr = "facebookId";
     private String nameAttr = "name";
     private String aboutAttr = "about";
@@ -35,6 +37,7 @@ public class Page extends BaseModel {
     public Page(){}
 
     public Page(JSONObject jsonObject) throws JSONException {
+        set_id(jsonObject.getString(_idAttr));
         setFacebookId(jsonObject.getString(facebookAttr));
         setName(jsonObject.getString(nameAttr));
         setAbout(jsonObject.getString(aboutAttr));
@@ -43,6 +46,9 @@ public class Page extends BaseModel {
     public JSONObject toJSON() throws JSONException {
         if(getJsonObject() == null) {
             setJsonObject(new JSONObject());
+            if(!get_id().equals("")) {
+                getJsonObject().put(_idAttr, get_id());
+            }
             getJsonObject().put(facebookAttr, getFacebookId());
             getJsonObject().put(nameAttr, getName());
             getJsonObject().put(aboutAttr, getAbout());
@@ -80,5 +86,13 @@ public class Page extends BaseModel {
 
     public void setJsonObject(JSONObject jsonObject) {
         this.jsonObject = jsonObject;
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
     }
 }

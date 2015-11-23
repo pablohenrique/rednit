@@ -43,6 +43,7 @@ public class FacebookAccount extends BaseModel {
 //    }
 
 //    @Column
+    private String _id = "";
     private String facebookId;
 //    @Column
     private List<Likes> likes;
@@ -50,6 +51,7 @@ public class FacebookAccount extends BaseModel {
     private List<Account> friends;
     private JSONObject jsonObject;
 
+//    private String _idAttr = "_id";
     private String facebookAttr = "facebookId";
     private String likesAttr = "likes";
     private String friendsAttr = "friends";
@@ -58,6 +60,7 @@ public class FacebookAccount extends BaseModel {
     public FacebookAccount(){}
 
     public FacebookAccount(JSONObject jsonObject) throws JSONException, ParseException {
+//        set_id(jsonObject.getString(_idAttr));
         setFacebookId(jsonObject.getString(facebookAttr));
         setLikes(jsonObject.getJSONArray(likesAttr));
         setLikes(jsonObject.getJSONArray(friendsAttr));
@@ -66,6 +69,9 @@ public class FacebookAccount extends BaseModel {
     public JSONObject toJSON() throws JSONException {
         if(getJsonObject() == null) {
             setJsonObject(new JSONObject());
+//            if(get_id() != "") {
+//                getJsonObject().put(_idAttr, get_id());
+//            }
             getJsonObject().put(facebookAttr, getFacebookId());
             getJsonObject().put(likesAttr, getLikesJSONArray());
             getJsonObject().put(friendsAttr, getFriendsJSONArray());
@@ -137,4 +143,12 @@ public class FacebookAccount extends BaseModel {
     public void setJsonObject(JSONObject jsonObject) {
         this.jsonObject = jsonObject;
     }
+
+//    public String get_id() {
+//        return _id;
+//    }
+//
+//    public void set_id(String _id) {
+//        this._id = _id;
+//    }
 }

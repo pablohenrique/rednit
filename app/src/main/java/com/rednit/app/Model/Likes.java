@@ -37,6 +37,7 @@ public class Likes extends BaseModel {
 
 //    @Column
 //    @PrimaryKey
+    private String _id = "";
     private String facebookId;
 //    @Column
 //    @ForeignKey(
@@ -49,6 +50,7 @@ public class Likes extends BaseModel {
     private Date instant;
     private JSONObject jsonObject;
 
+    private String _idAttr = "_id";
     private String facebookAttr = "facebookId";
     private String pageAttr = "page";
     private String instantAttr = "instant";
@@ -59,6 +61,7 @@ public class Likes extends BaseModel {
     public Likes(){}
 
     public Likes(JSONObject jsonObject) throws JSONException, ParseException {
+        set_id(jsonObject.getString(_idAttr));
         setFacebookId(jsonObject.getString(facebookAttr));
         setPage(new Page(jsonObject.getJSONObject(pageAttr)));
 
@@ -71,6 +74,9 @@ public class Likes extends BaseModel {
     public JSONObject toJSON() throws JSONException {
         if(getJsonObject() == null) {
             setJsonObject(new JSONObject());
+            if(!get_id().equals("")){
+                getJsonObject().put(_idAttr, get_id());
+            }
             getJsonObject().put(facebookAttr, getFacebookId());
             getJsonObject().put(pageAttr, getPage().toJSON());
             getJsonObject().put(instantAttr, getInstant().toString());
@@ -108,5 +114,13 @@ public class Likes extends BaseModel {
 
     public void setJsonObject(JSONObject jsonObject) {
         this.jsonObject = jsonObject;
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
     }
 }

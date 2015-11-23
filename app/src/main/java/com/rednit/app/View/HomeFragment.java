@@ -105,9 +105,9 @@ public class HomeFragment
 //        CustomJSONObjectRequest jsonRequest = new CustomJSONObjectRequest(Request.Method.GET, url, new JSONObject(), HomeFragment.this, HomeFragment.this);
         CustomJSONArrayRequest jsonRequest = new CustomJSONArrayRequest(Request.Method.GET, url, new JSONObject(), HomeFragment.this, HomeFragment.this);
         jsonRequest.setTag(HomeFragment.this.getClass().getName());
+        mQueue.add(jsonRequest);
 
         new DownloadImageTask((ImageView) rootView.findViewById(R.id.home_img_profile_circle) ).execute("https://fbcdn-sphotos-c-a.akamaihd.net/hphotos-ak-xpa1/v/t1.0-9/12227650_10205587203534851_6504001002331463838_n.jpg?oh=25879438ca96cb696538117703ad719a&oe=56EFDA46&__gda__=1458285392_15704eb827c39039edcecd7f0821ac94");
-        mQueue.add(jsonRequest);
 
 //        JSONModel jsonModel = new JSONModel<FiwareContextJson>(new JSONObject(), FiwareContextJson.class);
 //        jsonModel.save();

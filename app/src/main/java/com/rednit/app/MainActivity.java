@@ -94,8 +94,9 @@ public class MainActivity extends ActionBarActivity
 
         this.twitterSetup();
         twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
-//        this.facebookSetup();
-        this.callLoginLoadingScreen();
+
+        this.facebookSetup();
+//        this.callLoginLoadingScreen();
     }
 
     private void twitterSetup() {
