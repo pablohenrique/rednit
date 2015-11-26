@@ -70,7 +70,10 @@ public class ResultListFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        rootView = inflater.inflate(R.layout.fragment_result_list, container, false);ckResults();
+        rootView = inflater.inflate(R.layout.fragment_result_list, container, false);
+
+        final ResultPersonList resultPersonList = new ResultPersonList();
+//        resultPersonList.generateMockResults();
 
         try {
             Bundle bundle = this.getArguments();
@@ -82,10 +85,7 @@ public class ResultListFragment extends Fragment {
 
             Log.i("JSONArray", array.toString());
 
-            CustomListAdapter adapter = new CustomListAdapte
-
-        final ResultPersonList resultPersonList = new ResultPersonList();
-//        resultPersonList.generateMor(ResultListFragment.this.getActivity(), resultPersonList);
+            CustomListAdapter adapter = new CustomListAdapter(ResultListFragment.this.getActivity(), resultPersonList);
             list = (ListView) rootView.findViewById(R.id.result_list);
             list.setAdapter(adapter);
 
