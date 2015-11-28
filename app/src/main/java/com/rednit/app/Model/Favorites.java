@@ -1,21 +1,12 @@
 package com.rednit.app.Model;
 
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.ModelContainer;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
-import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
-import com.rednit.app.DAO.RednitDatabase;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.sql.Date;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Locale;
 
 //@Table(databaseName = RednitDatabase.NAME)
 //@ModelContainer
@@ -32,7 +23,7 @@ public class Favorites extends BaseModel {
 //    @Column
     private String text;
 //    @Column
-    private Date createdAt;
+    private java.util.Date createdAt;
     private JSONObject jsonObject;
 
     private String _idAttr = "_id";
@@ -43,13 +34,17 @@ public class Favorites extends BaseModel {
     public Favorites(){}
 
     public Favorites(JSONObject jsonObject) throws JSONException, ParseException {
-        set_id(jsonObject.getString(_idAttr));
+        if(!jsonObject.isNull(_idAttr)) {
+            set_id(jsonObject.getString(_idAttr));
+        }
         setTwitterId(jsonObject.getInt(twitterAttr));
         setText(jsonObject.getString(textAttr));
 
-        DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
-        Date date = (Date) format.parse(jsonObject.getString(createdAtAttr));
 
+        final String TWITTER="EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+        SimpleDateFormat sf = new SimpleDateFormat(TWITTER);
+        sf.setLenient(true);
+        java.util.Date date = sf.parse(jsonObject.getString(createdAtAttr));
         setCreatedAt(date);
     }
 
@@ -82,11 +77,11 @@ public class Favorites extends BaseModel {
         this.text = text;
     }
 
-    public Date getCreatedAt() {
+    public java.util.Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(java.util.Date createdAt) {
         this.createdAt = createdAt;
     }
 

@@ -1,7 +1,5 @@
 package com.rednit.app.Model;
 
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.json.JSONArray;
@@ -31,11 +29,11 @@ public class TwitterAccount extends BaseModel {
 
 //    @Column
 //    @PrimaryKey
-    private Integer twitterId;
+    private Long twitterId;
 //    @Column
-    private List<Favorites> favorites;
+    private List<Favorites> favorites = new ArrayList<Favorites>();
 //    @Column
-    private List<Integer> following;
+    private List<Long> following;
     private JSONObject jsonObject;
 
     private String twitterAttr = "twitterId";
@@ -45,7 +43,7 @@ public class TwitterAccount extends BaseModel {
     public TwitterAccount(){}
 
     public TwitterAccount(JSONObject jsonObject) throws JSONException, ParseException {
-        setTwitterId(jsonObject.getInt(twitterAttr));
+        setTwitterId(jsonObject.getLong(twitterAttr));
         setFavorites(jsonObject.getJSONArray(favoritesAttr));
         setFollowing(jsonObject.getJSONArray(followingAttr));
     }
@@ -60,11 +58,11 @@ public class TwitterAccount extends BaseModel {
         return getJsonObject();
     }
 
-    public Integer getTwitterId() {
+    public Long getTwitterId() {
         return twitterId;
     }
 
-    public void setTwitterId(Integer twitterId) {
+    public void setTwitterId(Long twitterId) {
         this.twitterId = twitterId;
     }
 
@@ -92,24 +90,24 @@ public class TwitterAccount extends BaseModel {
         setFavorites(favorites);
     }
 
-    public List<Integer> getFollowing() {
+    public List<Long> getFollowing() {
         return following;
     }
 
     public JSONArray getFollowingJSONArray() throws JSONException {
         JSONArray jsonArray = new JSONArray();
-        for(Integer following : getFollowing()){
+        for(Long following : getFollowing()){
             jsonArray.put(following);
         }
         return jsonArray;
     }
 
-    public void setFollowing(ArrayList<Integer> following) {
+    public void setFollowing(ArrayList<Long> following) {
         this.following = following;
     }
 
     public void setFollowing(JSONArray jsonArray) throws JSONException, ParseException {
-        ArrayList<Integer> following = new ArrayList<>();
+        ArrayList<Long> following = new ArrayList<>();
         for(int i = 0; i < jsonArray.length(); i++){
             favorites.add( new Favorites(jsonArray.getJSONObject(i)) );
         }
