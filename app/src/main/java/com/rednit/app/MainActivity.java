@@ -153,7 +153,7 @@ public class MainActivity extends ActionBarActivity
                                 Favorites f = new Favorites(jsonObject);
                                 twitterAccount.getFavorites().add(f);
 
-                                String url = "http://192.168.1.8:3000/api/tweets";
+                                String url = "http://54.88.31.160:3000/api/tweets";
 
                                 JsonObjectRequest jsonObjReq = new JsonObjectRequest(
                                         Request.Method.POST, url, jsonObject,
