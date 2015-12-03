@@ -8,28 +8,28 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:src="@drawable/ic_action_settings"
-            android:layout_gravity="top|left"/>
+    <!--<ImageView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:padding="10dp"-->
+            <!--android:src="@drawable/ic_action_settings"-->
+            <!--android:layout_gravity="top|left"/>-->
 
-    <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:layout_marginTop="50dp"
-            android:src="@drawable/ic_action_chat"
-            android:layout_gravity="top|left"/>
+    <!--<ImageView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:padding="10dp"-->
+            <!--android:layout_marginTop="50dp"-->
+            <!--android:src="@drawable/ic_action_chat"-->
+            <!--android:layout_gravity="top|left"/>-->
 
-    <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:layout_marginTop="100dp"
-            android:src="@drawable/ic_action_help"
-            android:layout_gravity="top|left"/>
+    <!--<ImageView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:padding="10dp"-->
+            <!--android:layout_marginTop="100dp"-->
+            <!--android:src="@drawable/ic_action_help"-->
+            <!--android:layout_gravity="top|left"/>-->
 
 
     <ImageView

@@ -9,18 +9,26 @@
         android:id="@+id/chat_friend_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <ImageButton
-            android:id="@+id/chat_friend_avatar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/abc_btn_check_material"/>
+
         <TextView
             android:layout_toRightOf="@+id/chat_friend_avatar"
             android:layout_marginTop="15dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Fulaninho Doido"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:layout_marginLeft="15dp"
+            android:id="@+id/textView" />
+
+        <ImageButton
+            android:id="@+id/chat_friend_avatar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/block"
+            android:layout_marginTop="12dp"
+            android:layout_marginLeft="70dp"
+            android:layout_alignBottom="@+id/textView" />
+
     </RelativeLayout>
 
 </FrameLayout>
