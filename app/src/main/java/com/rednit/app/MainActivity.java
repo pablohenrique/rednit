@@ -12,6 +12,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -24,7 +29,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.rednit.app.Controller.MyLocation;
+import com.rednit.app.Model.Favorites;
 import com.rednit.app.Model.MyFacebook;
+import com.rednit.app.Model.TwitterAccount;
 import com.rednit.app.Util.MyTwitterApiClient;
 import com.rednit.app.Util.Util;
 import com.rednit.app.View.HomeFragment;
@@ -50,6 +57,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -75,7 +84,7 @@ public class MainActivity extends ActionBarActivity
     private String likedPages;
     private static final String TWITTER_KEY = "MEhrB2Z8cdbUP0P97vnrbFjZy";
     private static final String TWITTER_SECRET = "ULgjeTVKOhAmpUh8zA9guMUU243kqTwj095TR2o6cZnNNeYGww";
-
+    private static TwitterAccount twitterAccount = new TwitterAccount();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,29 +127,56 @@ public class MainActivity extends ActionBarActivity
                 Log.i("Username", session.getUserName());
 
 
-                MyTwitterApiClient twitterApiClient = new MyTwitterApiClient(session);
+                final MyTwitterApiClient twitterApiClient = new MyTwitterApiClient(session);
 //                TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
                 // Can also use Twitter directly: Twitter.getApiClient()
 
+                final String TAG = "Favorite";
                 //Obtem os tweets favoritos
                 FavoriteService favoriteService = twitterApiClient.getFavoriteService();
                 favoriteService.list(session.getUserId(), null, null, null, null, null, new Callback<List<Tweet>>() {
                     @Override
-                    public void success(Result<List<Tweet>> result) {
-                        Log.i("Success2", "");
-                        List<Tweet> l = result.data;
+                    public void success(final Result<List<Tweet>> result) {
+                        final List<Tweet> l = result.data;
                         for (int i = 0; i < l.size(); i++) {
-                            Log.i("Result:", l.get(i).text);
-                        }
+                            Log.i(TAG, "Text:" + l.get(i).text);
+                            Log.i(TAG, "CreatedAt:" + l.get(i).createdAt);
+                            Log.i(TAG, "IdStr:" + l.get(i).idStr);
 
-                        final JSONObject jo = new JSONObject();
-                        try {
-                            jo.put("name", "Leo1 From Android");
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                            JSONObject jsonObject = new JSONObject();
+                            try {
+                                jsonObject.put("twitterId", l.get(i).idStr);
+                                jsonObject.put("createdAt", l.get(i).createdAt);
+                                jsonObject.put("text", l.get(i).text);
+
+                                Favorites f = new Favorites(jsonObject);
+                                twitterAccount.getFavorites().add(f);
+
+                                String url = "http://54.88.31.160:3000/api/tweets";
+
+                                JsonObjectRequest jsonObjReq = new JsonObjectRequest(
+                                        Request.Method.POST, url, jsonObject,
+                                        new Response.Listener<JSONObject>() {
+                                            @Override
+                                            public void onResponse(JSONObject response) {
+                                                Log.i(TAG+"ARC", response.toString());
+                                            }
+                                        }, new Response.ErrorListener() {
+
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        Log.i(TAG, "Error: " + error.toString());
+                                    }
+                                });
+
+                                Volley.newRequestQueue(MainActivity.this).add(jsonObjReq);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
                         }
-                        postToServer("http://172.16.0.3:3000/api/accounts", jo);
                     }
 
                     @Override
@@ -149,14 +185,16 @@ public class MainActivity extends ActionBarActivity
                     }
                 });
 
-
                 //Obtem a lista de amigos que o usuário segue
                 twitterApiClient.getFriendsService().idsByUserId(session.getUserId(), new Callback<MyTwitterApiClient.Ids>() {
                     @Override
                     public void success(Result<MyTwitterApiClient.Ids> result) {
-                        //success
-                        Log.i("Result3", "");
-                        result.data.printIds();
+                        if(result.data.ids.length <= 0){
+                            return;
+                        }
+                        ArrayList<Long> following = new ArrayList<Long>();
+                        following.addAll(Arrays.asList(result.data.ids));
+                        twitterAccount.setFollowing(following);
                     }
 
                     @Override
@@ -172,8 +210,9 @@ public class MainActivity extends ActionBarActivity
                     @Override
                     public void success(Result<User> userResult) {
                         Log.i("Result4", "");
-                        User u = userResult.data;
-                        Log.i("Name", u.name);
+//                        User u = userResult.data;
+//                        Log.i("Name", u.name);
+                        twitterAccount.setTwitterId(userResult.data.id);
                     }
 
                     @Override
