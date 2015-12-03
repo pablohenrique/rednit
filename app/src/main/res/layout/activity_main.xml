@@ -1,4 +1,4 @@
-<FrameLayout
+<GridLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_container"
@@ -7,82 +7,14 @@
     tools:context=".MainActivity"
     android:background="@drawable/loginrednit">
 
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="rednit"-->
-        <!--android:textSize="100dp"-->
-        <!--android:layout_marginTop="50dp"-->
-        <!--android:layout_marginLeft="35dp"-->
-        <!--android:textColor="@color/white"-->
-        <!--android:gravity="center|center_horizontal"/>-->
+    <com.facebook.login.widget.LoginButton
+        xmlns:facebook="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/main_btn_facebook"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginRight="100dp"
+        android:layout_marginLeft="100dp"
+        android:background="@drawable/facebook"
+        android:layout_gravity="center"/>
 
-    <GridLayout
-        android:layout_width="wrap_content"
-        android:layout_height="110dp"
-        android:gravity="center|center_vertical"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="250dp">
-
-        <!--<com.google.android.gms.common.SignInButton-->
-        <!--android:id="@+id/main_btn_google"-->
-        <!--android:layout_width="100dp"-->
-        <!--android:layout_height="100dp"-->
-        <!--android:layout_marginLeft="5dp"-->
-        <!--android:layout_marginTop="5dp"-->
-        <!--android:text="g+"-->
-        <!--android:textSize="40sp"-->
-        <!--android:textColor="@color/white"-->
-        <!--android:textAllCaps="false"-->
-        <!--android:background="@drawable/circular_stroked_button_selector"-->
-        <!--android:layout_row="0"-->
-        <!--android:layout_column="0"/>-->
-
-        <com.facebook.login.widget.LoginButton
-            android:id="@+id/main_btn_facebook"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/facebook"
-            android:layout_row="0"
-            android:layout_column="1"/>
-            <!--style="@style/FacebookLoginButton"-->
-
-
-        <!--<com.facebook.widget.LoginButton-->
-            <!--xmlns:fb="http://schemas.android.com/apk/res-auto"-->
-            <!--android:id="@+id/main_btn_facebook"-->
-            <!--android:layout_width="fill_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--fb:login_text="@string/loginFacebookButton"-->
-            <!--fb:logout_text=""-->
-            <!--style="@style/FacebookLoginButton"/>-->
-        <!-- -->
-
-        <!--android:background="@drawable/circular_stroked_button_selector"-->
-
-        <!--<Button
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="5dp"
-                android:text="t"
-                android:textSize="40sp"
-                android:textColor="@color/white"
-                android:textAllCaps="false"
-                android:background="@drawable/circular_stroked_button_selector"
-                android:layout_row="0"
-                android:layout_column="2"/>-->
-
-        <com.twitter.sdk.android.core.identity.TwitterLoginButton
-            android:id="@+id/twitter_login_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:background="@drawable/facebook"/>
-
-    </GridLayout>
-
-
-</FrameLayout>
+</GridLayout>

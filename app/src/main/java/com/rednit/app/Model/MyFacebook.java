@@ -81,7 +81,7 @@ public class MyFacebook {
         ).executeAndWait();
     }
 
-    public  String putDataToServer(JSONObject returnedJObject) throws Throwable {
+    public String putDataToServer(JSONObject returnedJObject) throws Throwable {
         System.out.println("|");
         System.out.println(returnedJObject.toString());
         System.out.println("|");

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class ResultPerson {
 
     private long id;
+    private String _id;
     private String identifier;
     private String socialMedia;
     private String firstName;
@@ -36,6 +37,14 @@ public class ResultPerson {
         setFirstName(firstName);
         setSecondName(secondName);
         setPictureProfile(pictureProfile);
+    }
+
+    public ResultPerson(JSONObject jsonObject) throws JSONException {
+        set_id(jsonObject.getString("_id"));
+        setFirstName(jsonObject.getString("name"));
+        setSecondName("~");
+        setPictureProfile(jsonObject.getString("photoUrl"));
+        setSocialMedia("Facebook");
     }
 
     public JSONObject toJSON(){
@@ -121,5 +130,13 @@ public class ResultPerson {
 
     public void setSocialMedia(String socialMedia) {
         this.socialMedia = socialMedia;
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
     }
 }
