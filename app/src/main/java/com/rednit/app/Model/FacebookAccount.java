@@ -26,7 +26,7 @@ public class FacebookAccount extends BaseModel {
 
     private String _id = "";
     private String facebookId;
-    private ArrayList<Likes> likes;
+    private ArrayList<LikesSimple> likes;
     private ArrayList<Account> friends;
     private JSONObject jsonObject;
 
@@ -63,26 +63,26 @@ public class FacebookAccount extends BaseModel {
     }
 
 
-    public ArrayList<Likes> getLikes() {
+    public ArrayList<LikesSimple> getLikes() {
         return likes;
     }
 
     public JSONArray getLikesJSONArray() throws JSONException {
         JSONArray jsonArray = new JSONArray();
-        for(Likes likes : getLikes()){
+        for(LikesSimple likes : getLikes()){
             jsonArray.put(likes.toJSON());
         }
         return jsonArray;
     }
 
-    public void setLikes(ArrayList<Likes> likes) {
+    public void setLikes(ArrayList<LikesSimple> likes) {
         this.likes = likes;
     }
 
     public void setLikes(JSONArray likes) throws JSONException, ParseException {
-        ArrayList<Likes> myLikes = new ArrayList<>();
+        ArrayList<LikesSimple> myLikes = new ArrayList<>();
         for(int i = 0; i < likes.length(); i++){
-            myLikes.add(new Likes(likes.getJSONObject(i)));
+            myLikes.add(new LikesSimple(likes.getJSONObject(i)));
         }
         setLikes(myLikes);
     }

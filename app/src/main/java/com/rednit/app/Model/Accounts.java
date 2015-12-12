@@ -24,7 +24,7 @@ public class Accounts {
 
     public Accounts(JSONObject jsonObject) throws JSONException, ParseException {
         setFacebookAccount( new FacebookAccount(jsonObject.getJSONObject(facebookAttr)) );
-        setTwitterAccount(new TwitterAccount(jsonObject.getJSONObject(twitterAttr)));
+  //      setTwitterAccount(new TwitterAccount(jsonObject.getJSONObject(twitterAttr)));
     }
 
     public Accounts() {
@@ -35,7 +35,7 @@ public class Accounts {
         if(getJsonObject() == null) {
             setJsonObject(new JSONObject());
             getJsonObject().put(facebookAttr, getFacebookAccount().toJSON());
-            getJsonObject().put(twitterAttr, getTwitterAccount().toJSON());
+//            getJsonObject().put(twitterAttr, getTwitterAccount().toJSON());
         }
         return getJsonObject();
     }

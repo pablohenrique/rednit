@@ -25,6 +25,7 @@ public class FacebookController {
     //String urlGetAccount = "http://54.88.31.160:3000/api/accounts/";
     //String urlPostAccount = "http://54.88.31.160:3000/api/accounts/";
     ArrayList<Likes> likesList = new ArrayList<Likes>();
+    ArrayList<LikesSimple> likesSimpleList = new ArrayList<LikesSimple>();
     Account account = new Account();
 
     public void listLikes(final String profile, String after) {
@@ -92,7 +93,8 @@ public class FacebookController {
         account.setPhotoUrl(profile.getProfilePictureUri(20,20).toString());
         FacebookAccount fba = new FacebookAccount();
         fba.setFacebookId(profile.getId());
-        fba.setLikes(likesList);
+        simplifyLikes();
+        fba.setLikes(likesSimpleList);
         Accounts accounts = new Accounts();
         accounts.setFacebookAccount(fba);
         account.setAccounts(accounts);
@@ -100,9 +102,23 @@ public class FacebookController {
 
     public void postAccount(){
         JSONParser jp = new JSONParser();
-        jp.postToServer(urlPostAccount, account.getJsonObject());
+
+        try {
+            jp.postToServer(urlPostAccount, account.toJSON());
+            System.out.println("POST: json: "+account.toJSON().toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
+    public void simplifyLikes(){
+        for(int i = 0 ; i < likesList.size() ; i++){
+            LikesSimple ls = new LikesSimple();
+            ls.set_id(likesList.get(i).get_id());
+            likesSimpleList.add(ls);
+        }
+
+    }
 
 
 
