@@ -19,36 +19,15 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-//@Table(databaseName = RednitDatabase.NAME)
-//@ModelContainer
+
 public class FacebookAccount extends BaseModel {
 
-//    facebookAccount: {
-//        facebookId: { type: String, index: true },
-//        likes: [
-//        {
-//            facebookId: { type: String, index: true },
-//            page: {
-//                type: mongoose.Schema.Types.ObjectId,
-//                        ref: 'Pages',
-//                        index: true
-//            },
-//            instant: Date
-//        }
-//        ],
-//        friends : {
-//            type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Account'}],
-//            index: true
-//        }
-//    }
 
-//    @Column
+
     private String _id = "";
     private String facebookId;
-//    @Column
-    private List<Likes> likes;
-//    @Column
-    private List<Account> friends;
+    private ArrayList<Likes> likes;
+    private ArrayList<Account> friends;
     private JSONObject jsonObject;
 
 //    private String _idAttr = "_id";
@@ -60,7 +39,6 @@ public class FacebookAccount extends BaseModel {
     public FacebookAccount(){}
 
     public FacebookAccount(JSONObject jsonObject) throws JSONException, ParseException {
-//        set_id(jsonObject.getString(_idAttr));
         setFacebookId(jsonObject.getString(facebookAttr));
         setLikes(jsonObject.getJSONArray(likesAttr));
         setLikes(jsonObject.getJSONArray(friendsAttr));
@@ -69,9 +47,6 @@ public class FacebookAccount extends BaseModel {
     public JSONObject toJSON() throws JSONException {
         if(getJsonObject() == null) {
             setJsonObject(new JSONObject());
-//            if(get_id() != "") {
-//                getJsonObject().put(_idAttr, get_id());
-//            }
             getJsonObject().put(facebookAttr, getFacebookId());
             getJsonObject().put(likesAttr, getLikesJSONArray());
             getJsonObject().put(friendsAttr, getFriendsJSONArray());
@@ -87,11 +62,8 @@ public class FacebookAccount extends BaseModel {
         this.facebookId = facebookId;
     }
 
-//    @OneToMany(methods = {OneToMany.Method.ALL}, variableName = "likes")
-    public List<Likes> getLikes() {
-//        if(likes == null){
-//            likes = new Select().from(Likes.class).where(Condition.column(Likes$Table.FACEBOOKID).eq(this.getFacebookId())).queryList();
-//        }
+
+    public ArrayList<Likes> getLikes() {
         return likes;
     }
 
@@ -103,7 +75,7 @@ public class FacebookAccount extends BaseModel {
         return jsonArray;
     }
 
-    public void setLikes(List<Likes> likes) {
+    public void setLikes(ArrayList<Likes> likes) {
         this.likes = likes;
     }
 
@@ -115,10 +87,9 @@ public class FacebookAccount extends BaseModel {
         setLikes(myLikes);
     }
 
-//    @OneToMany(methods = {OneToMany.Method.ALL}, variableName = "friends")
-    public List<Account> getFriends() {
+
+    public ArrayList<Account> getFriends() {
         if(friends == null){
-//            friends = new Select().from(Account.class).where(Condition.column(Account$Table._ID).eq(this.getFacebookId())).queryList();
             friends = new ArrayList<Account>();
         }
         return friends;
@@ -132,7 +103,7 @@ public class FacebookAccount extends BaseModel {
         return jsonArray;
     }
 
-    public void setFriends(List<Account> friends) {
+    public void setFriends(ArrayList<Account> friends) {
         this.friends = friends;
     }
 
@@ -144,11 +115,5 @@ public class FacebookAccount extends BaseModel {
         this.jsonObject = jsonObject;
     }
 
-//    public String get_id() {
-//        return _id;
-//    }
-//
-//    public void set_id(String _id) {
-//        this._id = _id;
-//    }
+
 }

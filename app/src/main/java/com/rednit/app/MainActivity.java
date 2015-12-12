@@ -28,6 +28,7 @@ import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.raizlabs.android.dbflow.config.FlowManager;
+import com.rednit.app.Controller.FacebookController;
 import com.rednit.app.Controller.MyLocation;
 import com.rednit.app.Model.Favorites;
 import com.rednit.app.Model.MyFacebook;
@@ -76,7 +77,8 @@ public class MainActivity extends ActionBarActivity
     private List<String> permissions = Arrays.asList("public_profile", "email", "user_likes");
     private CallbackManager callbackManager;
     private LoginButton loginButton;
-    private MyFacebook myFacebook;
+   // private MyFacebook myFacebook;
+    private FacebookController facebookController;
     //    private AccessTokenTracker accessTokenTracker;
 //    private ProfileTracker profileTracker;
     MyLocation gps;
@@ -99,7 +101,8 @@ public class MainActivity extends ActionBarActivity
 
         callbackManager = CallbackManager.Factory.create();
         utils = new Util();
-        myFacebook = new MyFacebook();
+        //myFacebook = new MyFacebook();
+        facebookController = new FacebookController();
 
         this.twitterSetup();
         twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
@@ -385,7 +388,18 @@ public class MainActivity extends ActionBarActivity
 
             Profile profile = Profile.getCurrentProfile();
             if (profile != null) {
-                myFacebook.extractLikes(profile.getId(), "");
+                //myFacebook.extractLikes(profile.getId(), "");
+                facebookController.listLikes(profile.getId(),"");
+                facebookController.postLikes();
+                try {
+                    facebookController.setupAccount(profile);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                facebookController.postAccount();
+
             }
 //            gps = new MyLocation(MainActivity.this);
 //

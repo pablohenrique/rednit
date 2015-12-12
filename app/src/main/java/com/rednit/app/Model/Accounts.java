@@ -11,18 +11,11 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 
-/**
- * Created by pablohenrique on 11/22/15.
- */
-//@Table(databaseName = RednitDatabase.NAME)
+
 public class Accounts {
 
-//    @Column
-//    @PrimaryKey(autoincrement = true)
-//    private int id;
-//    @Column
+
     private FacebookAccount facebookAccount;
-//    @Column
     private TwitterAccount twitterAccount;
     private JSONObject jsonObject;
 
@@ -43,13 +36,6 @@ public class Accounts {
         return getJsonObject();
     }
 
-//    public int getId() {
-//        return id;
-//    }
-//
-//    public void setId(int id) {
-//        this.id = id;
-//    }
 
     public FacebookAccount getFacebookAccount() {
         return facebookAccount;
