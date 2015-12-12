@@ -20,55 +20,22 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-/**
- * Created by pablohenrique on 11/19/15.
- */
-//@Table(databaseName = RednitDatabase.NAME)
-//@ModelContainer
+
 public class Likes extends BaseModel {
 
-//    facebookId: { type: String, index: true },
-//            page: {
-//                type: mongoose.Schema.Types.ObjectId,
-//                        ref: 'Pages',
-//                        index: true
-//            },
-//            instant: Date
 
-//    @Column
-//    @PrimaryKey
     private String _id = "";
-    private String facebookId;
-//    @Column
-//    @ForeignKey(
-//            references = {@ForeignKeyReference(columnName = "page",
-//                    columnType = String.class,
-//                    foreignColumnName = "facebookId")},
-//            saveForeignKeyModel = false)
-    private Page page;
-//    @Column
-    private Date instant;
+    private String name;
     private JSONObject jsonObject;
-
     private String _idAttr = "_id";
-    private String facebookAttr = "facebookId";
-    private String pageAttr = "page";
-    private String instantAttr = "instant";
+    private String likeAttr = "name";
 
-//    @ForeignKey(references = {@ForeignKeyReference(columnName = "page", columnType = Long.class, foreignColumnName = "facebookId")}, onDelete = ForeignKeyAction.CASCADE, saveForeignKeyModel = false)
-//    private ForeignKeyContainer<Page> pageContainer;
 
     public Likes(){}
 
     public Likes(JSONObject jsonObject) throws JSONException, ParseException {
         set_id(jsonObject.getString(_idAttr));
-        setFacebookId(jsonObject.getString(facebookAttr));
-        setPage(new Page(jsonObject.getJSONObject(pageAttr)));
-
-        DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
-        Date date = (Date) format.parse(jsonObject.getString(instantAttr));
-
-        setInstant(date);
+        setName(jsonObject.getString(likeAttr));
     }
 
     public JSONObject toJSON() throws JSONException {
@@ -77,36 +44,11 @@ public class Likes extends BaseModel {
             if(!get_id().equals("")){
                 getJsonObject().put(_idAttr, get_id());
             }
-            getJsonObject().put(facebookAttr, getFacebookId());
-            getJsonObject().put(pageAttr, getPage().toJSON());
-            getJsonObject().put(instantAttr, getInstant().toString());
+            getJsonObject().put(likeAttr, getName());
         }
         return getJsonObject();
     }
 
-    public String getFacebookId() {
-        return facebookId;
-    }
-
-    public void setFacebookId(String facebookId) {
-        this.facebookId = facebookId;
-    }
-
-    public Page getPage() {
-        return page;
-    }
-
-    public void setPage(Page page) {
-        this.page = page;
-    }
-
-    public Date getInstant() {
-        return instant;
-    }
-
-    public void setInstant(Date instant) {
-        this.instant = instant;
-    }
 
     public JSONObject getJsonObject() {
         return jsonObject;
@@ -122,5 +64,13 @@ public class Likes extends BaseModel {
 
     public void set_id(String _id) {
         this._id = _id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

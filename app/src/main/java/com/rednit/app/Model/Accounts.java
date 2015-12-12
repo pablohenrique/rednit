@@ -11,18 +11,11 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 
-/**
- * Created by pablohenrique on 11/22/15.
- */
-//@Table(databaseName = RednitDatabase.NAME)
+
 public class Accounts {
 
-//    @Column
-//    @PrimaryKey(autoincrement = true)
-//    private int id;
-//    @Column
+
     private FacebookAccount facebookAccount;
-//    @Column
     private TwitterAccount twitterAccount;
     private JSONObject jsonObject;
 
@@ -31,25 +24,22 @@ public class Accounts {
 
     public Accounts(JSONObject jsonObject) throws JSONException, ParseException {
         setFacebookAccount( new FacebookAccount(jsonObject.getJSONObject(facebookAttr)) );
-        setTwitterAccount(new TwitterAccount(jsonObject.getJSONObject(twitterAttr)));
+  //      setTwitterAccount(new TwitterAccount(jsonObject.getJSONObject(twitterAttr)));
+    }
+
+    public Accounts() {
+
     }
 
     public JSONObject toJSON() throws JSONException {
         if(getJsonObject() == null) {
             setJsonObject(new JSONObject());
             getJsonObject().put(facebookAttr, getFacebookAccount().toJSON());
-            getJsonObject().put(twitterAttr, getTwitterAccount().toJSON());
+//            getJsonObject().put(twitterAttr, getTwitterAccount().toJSON());
         }
         return getJsonObject();
     }
 
-//    public int getId() {
-//        return id;
-//    }
-//
-//    public void setId(int id) {
-//        this.id = id;
-//    }
 
     public FacebookAccount getFacebookAccount() {
         return facebookAccount;

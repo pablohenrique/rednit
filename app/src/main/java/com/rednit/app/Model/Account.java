@@ -24,59 +24,18 @@ import java.util.List;
 //@ModelContainer
 public class Account extends BaseModel {
 
-//    name: String,
-//    loc: { type: [Number], index: '2d' },
-//    email: { type: String, index: true },
-//    photoUrl: String,
-//    accounts: {
-//        facebookAccount: {
-//            facebookId: { type: String, index: true },
-//            likes: [
-//            {
-//                facebookId: { type: String, index: true },
-//                page: {
-//                    type: mongoose.Schema.Types.ObjectId,
-//                            ref: 'Pages',
-//                            index: true
-//                },
-//                instant: Date
-//            }
-//            ],
-//            friends : {
-//                type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Account'}],
-//                index: true
-//            }
-//        },
-//        twitterAccount: {
-//            twitterId: { type: Number, index: true },
-//            favorites: {
-//                type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tweets' }],
-//                index: true
-//            },
-//            following: {
-//                type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Account'}],
-//                index: true
-//            }
-//        }
-//    }
 
-//    @Column
-//    @PrimaryKey
     private String _id;
-//    @Column
     private String name;
-//    @Column
-    private String email;
-//    @Column
+    //private String email;
     private String photoUrl;
-//    @Column
     private double[] loc;
     private Accounts accounts;
     private JSONObject jsonObject;
 
     private String _idAttr = "_id";
     private String nameAttr = "name";
-    private String emailAttr = "email";
+    //private String emailAttr = "email";
     private String photoUrlAttr = "photoUrl";
     private String locAttr = "loc";
     private String accountsAttr = "accounts";
@@ -86,7 +45,7 @@ public class Account extends BaseModel {
     public Account(JSONObject jsonObject) throws JSONException, ParseException {
         set_id(jsonObject.getString(_idAttr));
         setName(jsonObject.getString(nameAttr));
-        setEmail(jsonObject.getString(emailAttr));
+        //setEmail(jsonObject.getString(emailAttr));
         setPhotoUrl(jsonObject.getString(photoUrlAttr));
         JSONArray jsonArray = jsonObject.getJSONArray(locAttr);
         double[] loc = {jsonArray.getDouble(0), jsonArray.getDouble(1)};
@@ -99,12 +58,12 @@ public class Account extends BaseModel {
             setJsonObject(new JSONObject());
             getJsonObject().put(_idAttr, get_id());
             getJsonObject().put(nameAttr, getName());
-            getJsonObject().put(emailAttr, getEmail());
+            //getJsonObject().put(emailAttr, getEmail());
             getJsonObject().put(photoUrlAttr, getPhotoUrl());
 
             JSONArray jsonArray = new JSONArray();
-            jsonArray.put(getLoc()[0]);
-            jsonArray.put(getLoc()[1]);
+            //jsonArray.put(getLoc()[0]);
+            //jsonArray.put(getLoc()[1]);
             getJsonObject().put(locAttr, getLoc());
             getJsonObject().put(accountsAttr, getAccounts().toJSON());
         }
@@ -119,13 +78,13 @@ public class Account extends BaseModel {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
-    }
+    //public String getEmail() {
+     //   return email;
+    //}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    //public void setEmail(String email) {
+    //    this.email = email;
+    //}
 
     public String getPhotoUrl() {
         return photoUrl;
