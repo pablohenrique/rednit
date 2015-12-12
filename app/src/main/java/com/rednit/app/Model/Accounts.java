@@ -27,6 +27,10 @@ public class Accounts {
         setTwitterAccount(new TwitterAccount(jsonObject.getJSONObject(twitterAttr)));
     }
 
+    public Accounts() {
+
+    }
+
     public JSONObject toJSON() throws JSONException {
         if(getJsonObject() == null) {
             setJsonObject(new JSONObject());
