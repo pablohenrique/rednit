@@ -16,9 +16,13 @@ import java.util.ArrayList;
 public class FacebookController {
     private String likedPages;
 
-    String urlPostLikes = "http://54.207.112.184:3000/api/likes/";
-    String urlGetAccount = "http://54.207.112.184:3000/api/accounts/";
-    String urlPostAccount = "http://54.207.112.184:3000/api/accounts/";
+    //String urlPostLikes = "http://54.207.112.184:3000/api/likes/";
+    //String urlGetAccount = "http://54.207.112.184:3000/api/accounts/";
+    //String urlPostAccount = "http://54.207.112.184:3000/api/accounts/";
+
+    String urlPostLikes = "http://10.0.1.61:3000/api/likes/";
+    String urlGetAccount = "http://10.0.1.61:3000/api/accounts/";
+    String urlPostAccount = "http://10.0.1.61:3000/api/accounts/";
 
 
     //String urlPostLikes = "http://54.88.31.160:3000/api/likes/";
