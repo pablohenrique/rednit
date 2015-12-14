@@ -104,133 +104,134 @@ public class MainActivity extends ActionBarActivity
         //myFacebook = new MyFacebook();
         facebookController = new FacebookController();
 
-        this.twitterSetup();
-        twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+        //this.twitterSetup();
+        //twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
 
         this.facebookSetup();
 //        this.callLoginLoadingScreen();
+
     }
 
-    private void twitterSetup() {
-        twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
-        twitterLoginButton.setCallback(new Callback<TwitterSession>() {
-            @Override
-            public void success(Result<TwitterSession> result) {
-                // Do something with result, which provides a TwitterSession for making API calls
-                callLoginLoadingScreen();
-
-                TwitterSession session = Twitter.getSessionManager().getActiveSession();
-                TwitterAuthToken authToken = session.getAuthToken();
-                String token = authToken.token;
-                String secret = authToken.secret;
-                Log.i("TwitterToken", token);    //211736597-Jkr7pjIVsjzvwT8hEZewTlXT4Sck1HvfvUYfbTXh
-                Log.i("TwitterSecret", secret);  //qWnD6KgqoVrQ0NbuqFZev79bkhTHrjaX5r5g09Zt8Hfbc
-                Log.i("Id", String.valueOf(session.getId()));
-                Log.i("UserId", String.valueOf(session.getUserId()));
-                Log.i("Username", session.getUserName());
-
-
-                final MyTwitterApiClient twitterApiClient = new MyTwitterApiClient(session);
-//                TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
-                // Can also use Twitter directly: Twitter.getApiClient()
-
-                final String TAG = "Favorite";
-                //Obtem os tweets favoritos
-                FavoriteService favoriteService = twitterApiClient.getFavoriteService();
-                favoriteService.list(session.getUserId(), null, null, null, null, null, new Callback<List<Tweet>>() {
-                    @Override
-                    public void success(final Result<List<Tweet>> result) {
-                        final List<Tweet> l = result.data;
-                        for (int i = 0; i < l.size(); i++) {
-                            Log.i(TAG, "Text:" + l.get(i).text);
-                            Log.i(TAG, "CreatedAt:" + l.get(i).createdAt);
-                            Log.i(TAG, "IdStr:" + l.get(i).idStr);
-
-
-                            JSONObject jsonObject = new JSONObject();
-                            try {
-                                jsonObject.put("twitterId", l.get(i).idStr);
-                                jsonObject.put("createdAt", l.get(i).createdAt);
-                                jsonObject.put("text", l.get(i).text);
-
-                                Favorites f = new Favorites(jsonObject);
-                                twitterAccount.getFavorites().add(f);
-
-                                String url = "http://54.88.31.160:3000/api/tweets";
-
-                                JsonObjectRequest jsonObjReq = new JsonObjectRequest(
-                                        Request.Method.POST, url, jsonObject,
-                                        new Response.Listener<JSONObject>() {
-                                            @Override
-                                            public void onResponse(JSONObject response) {
-                                                Log.i(TAG+"ARC", response.toString());
-                                            }
-                                        }, new Response.ErrorListener() {
-
-                                    @Override
-                                    public void onErrorResponse(VolleyError error) {
-                                        Log.i(TAG, "Error: " + error.toString());
-                                    }
-                                });
-
-                                Volley.newRequestQueue(MainActivity.this).add(jsonObjReq);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void failure(TwitterException e) {
-                        Log.i("Failure2", "");
-                    }
-                });
-
-                //Obtem a lista de amigos que o usuário segue
-                twitterApiClient.getFriendsService().idsByUserId(session.getUserId(), new Callback<MyTwitterApiClient.Ids>() {
-                    @Override
-                    public void success(Result<MyTwitterApiClient.Ids> result) {
-                        if(result.data.ids.length <= 0){
-                            return;
-                        }
-                        ArrayList<Long> following = new ArrayList<Long>();
-                        following.addAll(Arrays.asList(result.data.ids));
-                        twitterAccount.setFollowing(following);
-                    }
-
-                    @Override
-                    public void failure(TwitterException exception) {
-                        //failure
-                        Log.i("Failure3", exception.getMessage());
-
-                    }
-                });
-
-                //Obtem informações do perfil do usuário
-                twitterApiClient.getAccountService().verifyCredentials(true, false, new Callback<User>() {
-                    @Override
-                    public void success(Result<User> userResult) {
-                        Log.i("Result4", "");
-//                        User u = userResult.data;
-//                        Log.i("Name", u.name);
-                        twitterAccount.setTwitterId(userResult.data.id);
-                    }
-
-                    @Override
-                    public void failure(TwitterException e) {
-                        Log.i("Failure4", e.getMessage());
-                    }
-                });
-            }
-
-            @Override
-            public void failure(TwitterException exception) {
-                // Do something on failure
-            }
-        });
-    }
+//    private void twitterSetup() {
+//        twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+//        twitterLoginButton.setCallback(new Callback<TwitterSession>() {
+//            @Override
+//            public void success(Result<TwitterSession> result) {
+//                // Do something with result, which provides a TwitterSession for making API calls
+//                callLoginLoadingScreen();
+//
+//                TwitterSession session = Twitter.getSessionManager().getActiveSession();
+//                TwitterAuthToken authToken = session.getAuthToken();
+//                String token = authToken.token;
+//                String secret = authToken.secret;
+//                Log.i("TwitterToken", token);    //211736597-Jkr7pjIVsjzvwT8hEZewTlXT4Sck1HvfvUYfbTXh
+//                Log.i("TwitterSecret", secret);  //qWnD6KgqoVrQ0NbuqFZev79bkhTHrjaX5r5g09Zt8Hfbc
+//                Log.i("Id", String.valueOf(session.getId()));
+//                Log.i("UserId", String.valueOf(session.getUserId()));
+//                Log.i("Username", session.getUserName());
+//
+//
+//                final MyTwitterApiClient twitterApiClient = new MyTwitterApiClient(session);
+////                TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+//                // Can also use Twitter directly: Twitter.getApiClient()
+//
+//                final String TAG = "Favorite";
+//                //Obtem os tweets favoritos
+//                FavoriteService favoriteService = twitterApiClient.getFavoriteService();
+//                favoriteService.list(session.getUserId(), null, null, null, null, null, new Callback<List<Tweet>>() {
+//                    @Override
+//                    public void success(final Result<List<Tweet>> result) {
+//                        final List<Tweet> l = result.data;
+//                        for (int i = 0; i < l.size(); i++) {
+//                            Log.i(TAG, "Text:" + l.get(i).text);
+//                            Log.i(TAG, "CreatedAt:" + l.get(i).createdAt);
+//                            Log.i(TAG, "IdStr:" + l.get(i).idStr);
+//
+//
+//                            JSONObject jsonObject = new JSONObject();
+//                            try {
+//                                jsonObject.put("twitterId", l.get(i).idStr);
+//                                jsonObject.put("createdAt", l.get(i).createdAt);
+//                                jsonObject.put("text", l.get(i).text);
+//
+//                                Favorites f = new Favorites(jsonObject);
+//                                twitterAccount.getFavorites().add(f);
+//
+//                                String url = "http://54.88.31.160:3000/api/tweets";
+//
+//                                JsonObjectRequest jsonObjReq = new JsonObjectRequest(
+//                                        Request.Method.POST, url, jsonObject,
+//                                        new Response.Listener<JSONObject>() {
+//                                            @Override
+//                                            public void onResponse(JSONObject response) {
+//                                                Log.i(TAG+"ARC", response.toString());
+//                                            }
+//                                        }, new Response.ErrorListener() {
+//
+//                                    @Override
+//                                    public void onErrorResponse(VolleyError error) {
+//                                        Log.i(TAG, "Error: " + error.toString());
+//                                    }
+//                                });
+//
+//                                Volley.newRequestQueue(MainActivity.this).add(jsonObjReq);
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            } catch (ParseException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void failure(TwitterException e) {
+//                        Log.i("Failure2", "");
+//                    }
+//                });
+//
+//                //Obtem a lista de amigos que o usuário segue
+//                twitterApiClient.getFriendsService().idsByUserId(session.getUserId(), new Callback<MyTwitterApiClient.Ids>() {
+//                    @Override
+//                    public void success(Result<MyTwitterApiClient.Ids> result) {
+//                        if(result.data.ids.length <= 0){
+//                            return;
+//                        }
+//                        ArrayList<Long> following = new ArrayList<Long>();
+//                        following.addAll(Arrays.asList(result.data.ids));
+//                        twitterAccount.setFollowing(following);
+//                    }
+//
+//                    @Override
+//                    public void failure(TwitterException exception) {
+//                        //failure
+//                        Log.i("Failure3", exception.getMessage());
+//
+//                    }
+//                });
+//
+//                //Obtem informações do perfil do usuário
+//                twitterApiClient.getAccountService().verifyCredentials(true, false, new Callback<User>() {
+//                    @Override
+//                    public void success(Result<User> userResult) {
+//                        Log.i("Result4", "");
+////                        User u = userResult.data;
+////                        Log.i("Name", u.name);
+//                        twitterAccount.setTwitterId(userResult.data.id);
+//                    }
+//
+//                    @Override
+//                    public void failure(TwitterException e) {
+//                        Log.i("Failure4", e.getMessage());
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void failure(TwitterException exception) {
+//                // Do something on failure
+//            }
+//        });
+//    }
 
     public void postToServer(final String urlParam, final JSONObject jdata) {
         new Thread(new Runnable() {

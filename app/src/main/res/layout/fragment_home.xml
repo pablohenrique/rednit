@@ -8,6 +8,28 @@
 
     <!-- TODO: Update blank fragment layout -->
 
+    <!--<ImageView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:padding="10dp"-->
+            <!--android:src="@drawable/ic_action_settings"-->
+            <!--android:layout_gravity="top|left"/>-->
+
+    <!--<ImageView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:padding="10dp"-->
+            <!--android:layout_marginTop="50dp"-->
+            <!--android:src="@drawable/ic_action_chat"-->
+            <!--android:layout_gravity="top|left"/>-->
+
+    <!--<ImageView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:padding="10dp"-->
+            <!--android:layout_marginTop="100dp"-->
+            <!--android:src="@drawable/ic_action_help"-->
+            <!--android:layout_gravity="top|left"/>-->
 
     <ImageView
         android:id="@+id/home_img_large_circle"
@@ -44,28 +66,6 @@
         android:layout_gravity="center|center_horizontal"
         android:layout_marginTop="-40dp"/>
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|left"
-        android:padding="10dp"
-        android:src="@drawable/ic_action_settings" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|left"
-        android:layout_marginTop="50dp"
-        android:padding="10dp"
-        android:src="@drawable/ic_action_chat" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|left"
-        android:layout_marginTop="100dp"
-        android:padding="10dp"
-        android:src="@drawable/ic_action_help" />
 
     <TextView
         android:layout_width="wrap_content"
