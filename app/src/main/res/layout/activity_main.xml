@@ -7,6 +7,7 @@
     tools:context=".MainActivity"
     android:background="@drawable/loginrednit">
 
+    
     <com.facebook.login.widget.LoginButton
         xmlns:facebook="http://schemas.android.com/apk/res-auto"
         android:id="@+id/main_btn_facebook"
