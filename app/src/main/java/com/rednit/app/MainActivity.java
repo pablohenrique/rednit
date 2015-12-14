@@ -1,22 +1,21 @@
 package com.rednit.app;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -30,24 +29,12 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.rednit.app.Controller.FacebookController;
 import com.rednit.app.Controller.MyLocation;
-import com.rednit.app.Model.Favorites;
-import com.rednit.app.Model.MyFacebook;
 import com.rednit.app.Model.TwitterAccount;
-import com.rednit.app.Util.MyTwitterApiClient;
 import com.rednit.app.Util.Util;
 import com.rednit.app.View.HomeFragment;
 import com.rednit.app.View.ResultListFragment;
 import com.twitter.sdk.android.Twitter;
-import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
-import com.twitter.sdk.android.core.TwitterAuthToken;
-import com.twitter.sdk.android.core.TwitterException;
-import com.twitter.sdk.android.core.TwitterSession;
-import com.twitter.sdk.android.core.identity.TwitterLoginButton;
-import com.twitter.sdk.android.core.models.Tweet;
-import com.twitter.sdk.android.core.models.User;
-import com.twitter.sdk.android.core.services.FavoriteService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,8 +45,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -73,7 +61,7 @@ public class MainActivity extends ActionBarActivity
         HomeFragment.OnFragmentInteractionListener {
 
     private Util utils;
-    private TwitterLoginButton twitterLoginButton;
+//    private TwitterLoginButton twitterLoginButton;
     private List<String> permissions = Arrays.asList("public_profile", "email", "user_likes");
     private CallbackManager callbackManager;
     private LoginButton loginButton;
@@ -103,6 +91,25 @@ public class MainActivity extends ActionBarActivity
         utils = new Util();
         //myFacebook = new MyFacebook();
         facebookController = new FacebookController();
+
+        PackageInfo info;
+        try {
+            info = getPackageManager().getPackageInfo("com.rednit.app", PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md;
+                md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                String something = new String(Base64.encode(md.digest(), 0));
+                //String something = new String(Base64.encodeBytes(md.digest()));
+                Log.e("hash key", something);
+            }
+        } catch (PackageManager.NameNotFoundException e1) {
+            Log.e("name not found", e1.toString());
+        } catch (NoSuchAlgorithmException e) {
+            Log.e("no such an algorithm", e.toString());
+        } catch (Exception e) {
+            Log.e("exception", e.toString());
+        }
 
         //this.twitterSetup();
         //twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
@@ -279,7 +286,7 @@ public class MainActivity extends ActionBarActivity
         //Facebook
         callbackManager.onActivityResult(requestCode, resultCode, data);
         //Twitter
-        twitterLoginButton.onActivityResult(requestCode, resultCode, data);
+//        twitterLoginButton.onActivityResult(requestCode, resultCode, data);
     }
 
     //Google
@@ -438,7 +445,8 @@ public class MainActivity extends ActionBarActivity
     }
 
     private void callLoginLoadingScreen() {
-        twitterLoginButton.setVisibility(View.INVISIBLE);
+        loginButton.setVisibility(View.INVISIBLE);
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .add(R.id.fragment_container, new HomeFragment())

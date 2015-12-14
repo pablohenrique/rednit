@@ -1,21 +1,26 @@
-<GridLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_container"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    tools:context=".MainActivity"
-    android:background="@drawable/loginrednit">
+    tools:context=".MainActivity">
 
-    
-    <com.facebook.login.widget.LoginButton
-        xmlns:facebook="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/main_btn_facebook"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginRight="100dp"
-        android:layout_marginLeft="100dp"
-        android:background="@drawable/facebook"
-        android:layout_gravity="center"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/loginrednit">
 
-</GridLayout>
+        <com.facebook.login.widget.LoginButton
+            xmlns:facebook="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/main_btn_facebook"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginRight="100dp"
+            android:layout_marginLeft="100dp"
+            android:background="@drawable/facebook"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
