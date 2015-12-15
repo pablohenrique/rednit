@@ -400,7 +400,17 @@ public class MainActivity extends ActionBarActivity
                 facebookController.listLikes(profile.getId(),"");
                 facebookController.postLikes();
                 try {
-                    facebookController.setupAccount(profile);
+                    double[] loc = new double[2];
+                    gps = new MyLocation(MainActivity.this);
+                    if(gps.canGetLocation()){
+                        loc[0] = gps.getLatitude();
+                        loc[1] = gps.getLongitude();
+                    }else{
+                        loc[0] = 0;
+                        loc[1] = 0;
+                        gps.showSettingsAlert();
+                    }
+                    facebookController.setupAccount(profile, loc);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (ParseException e) {
@@ -409,20 +419,7 @@ public class MainActivity extends ActionBarActivity
                 facebookController.postAccount();
 
             }
-//            gps = new MyLocation(MainActivity.this);
-//
-//            if (gps.canGetLocation()) {
-//
-//                double latitude = gps.getLatitude();
-//                double longitude = gps.getLongitude();
-//                try {
-//                    myFacebook.putDataToServer(new FiwareContextJson(profile.getId()).locationJson(latitude, longitude));
-//                } catch (Throwable throwable) {
-//                    throwable.printStackTrace();
-//                }
-//            } else {
-//                gps.showSettingsAlert();
-//            }
+
             callLoginLoadingScreen();
         }
     }
