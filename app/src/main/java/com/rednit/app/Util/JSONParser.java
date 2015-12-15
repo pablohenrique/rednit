@@ -9,7 +9,10 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -107,6 +110,52 @@ public class JSONParser {
             }
         }).start();
 
+
+    }
+
+    public static JSONObject POST(final String urlParam, final JSONObject jdata){
+        InputStream inputStream = null;
+        String result = "";
+        JSONObject jsonObj = null;
+        try {
+
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpPost httpPost = new HttpPost(urlParam);
+
+            String json = "";
+            json = jdata.toString();
+            StringEntity se = new StringEntity(json);
+            httpPost.setEntity(se);
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+            HttpResponse httpResponse = httpclient.execute(httpPost);
+            inputStream = httpResponse.getEntity().getContent();
+            if(inputStream != null)
+                result = convertInputStreamToString(inputStream);
+            else
+                result = "Did not work!";
+
+        } catch (Exception e) {
+            Log.d("InputStream", e.getLocalizedMessage());
+        }
+        try {
+           jsonObj = new JSONObject(result);
+            System.out.println("IS BACK: "+jsonObj.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObj;
+    }
+
+    private static String convertInputStreamToString(InputStream inputStream) throws IOException{
+        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+        String line = "";
+        String result = "";
+        while((line = bufferedReader.readLine()) != null)
+            result += line;
+
+        inputStream.close();
+        return result;
 
     }
 }
