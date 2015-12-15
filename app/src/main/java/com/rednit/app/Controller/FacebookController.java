@@ -16,21 +16,26 @@ import java.util.ArrayList;
 public class FacebookController {
     private String likedPages;
 
+    //Yuri's server
     //String urlPostLikes = "http://54.207.112.184:3000/api/likes/";
     //String urlGetAccount = "http://54.207.112.184:3000/api/accounts/";
     //String urlPostAccount = "http://54.207.112.184:3000/api/accounts/";
 
+    //Use for localhost
     //String urlPostLikes = "http://10.0.1.61:3000/api/likes/";
     //String urlGetAccount = "http://10.0.1.61:3000/api/accounts/";
     //String urlPostAccount = "http://10.0.1.61:3000/api/accounts/";
 
-
+    //Pablo's server
     String urlPostLikes = "http://54.88.31.160:3000/api/likes/";
     String urlGetAccount = "http://54.88.31.160:3000/api/accounts/";
     String urlPostAccount = "http://54.88.31.160:3000/api/accounts/";
+
+
     ArrayList<Likes> likesList = new ArrayList<Likes>();
     ArrayList<LikesSimple> likesSimpleList = new ArrayList<LikesSimple>();
     Account account = new Account();
+    MyLocation gps;
 
     public void listLikes(final String profile, String after) {
         Bundle params = new Bundle();
@@ -92,9 +97,10 @@ public class FacebookController {
         }
     }
 
-    public void setupAccount(Profile profile) throws JSONException, ParseException {
+    public void setupAccount(Profile profile, double[] location) throws JSONException, ParseException {
         account.setName(profile.getName());
         account.setPhotoUrl(profile.getProfilePictureUri(20,20).toString());
+        account.setLoc(location);
         FacebookAccount fba = new FacebookAccount();
         fba.setFacebookId(profile.getId());
         simplifyLikes();

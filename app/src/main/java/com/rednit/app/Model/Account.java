@@ -62,9 +62,9 @@ public class Account extends BaseModel {
             getJsonObject().put(photoUrlAttr, getPhotoUrl());
 
             JSONArray jsonArray = new JSONArray();
-            //jsonArray.put(getLoc()[0]);
-            //jsonArray.put(getLoc()[1]);
-            getJsonObject().put(locAttr, getLoc());
+            jsonArray.put(getLoc()[0]);
+            jsonArray.put(getLoc()[1]);
+            getJsonObject().put(locAttr, jsonArray);
             getJsonObject().put(accountsAttr, getAccounts().toJSON());
         }
         return getJsonObject();
