@@ -3,6 +3,7 @@ package com.rednit.app.View;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -102,7 +103,7 @@ public class HomeFragment
         animate(smallCircle, true);
 
         mQueue = CustomVolleyRequestQueue.prepareInstance(HomeFragment.this.getActivity()).getRequestQueue();
-        String url = "http://54.88.31.160:3000/api/accounts";
+        String url = "http://54.88.31.160:3000/api/accounts/"+RednitUserSingleton.getInstance().getId()+"/findPeople/";
 //        CustomJSONObjectRequest jsonRequest = new CustomJSONObjectRequest(Request.Method.GET, url, new JSONObject(), HomeFragment.this, HomeFragment.this);
         CustomJSONArrayRequest jsonRequest = new CustomJSONArrayRequest(Request.Method.GET, url, new JSONObject(), HomeFragment.this, HomeFragment.this);
         jsonRequest.setTag(HomeFragment.this.getClass().getName());
@@ -165,20 +166,33 @@ public class HomeFragment
 
 //            Toast.makeText(HomeFragment.this.getActivity(), response.toString(), Toast.LENGTH_SHORT).show();
 
-            new Thread(new Runnable() {
+            Handler logHandler = new Handler();
+            Runnable logRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        Thread.sleep(5000);
-                        getFragmentManager()
-                                .beginTransaction()
-                                .add(R.id.fragment_container, resultListFragment)
-                                .commit();
-                    } catch (Exception e) {
-                        e.getLocalizedMessage();
-                    }
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                //Thread.sleep(5000);
+
+                                getFragmentManager()
+                                        .beginTransaction()
+                                        .add(R.id.fragment_container, resultListFragment)
+                                        .commit();
+                            } catch (Exception e) {
+                                e.getLocalizedMessage();
+                            }
+                        }
+                    }).run();
+
+
                 }
-            }).run();
+            };
+            logHandler.postDelayed(logRunnable, 5000);
+
+
+
 
         } catch (Exception ex){
             Toast.makeText(HomeFragment.this.getActivity(), response.toString(), Toast.LENGTH_SHORT).show();

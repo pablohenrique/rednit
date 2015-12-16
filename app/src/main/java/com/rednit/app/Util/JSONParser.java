@@ -5,6 +5,8 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 
+import android.content.SharedPreferences;
+import android.support.annotation.RequiresPermission;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -113,7 +115,7 @@ public class JSONParser {
 
     }
 
-    public static JSONObject POST(final String urlParam, final JSONObject jdata){
+    public static JSONObject POST(final String urlParam, final JSONObject jdata) throws JSONException {
         InputStream inputStream = null;
         String result = "";
         JSONObject jsonObj = null;

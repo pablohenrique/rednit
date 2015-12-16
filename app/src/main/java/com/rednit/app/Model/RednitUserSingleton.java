@@ -6,6 +6,8 @@ package com.rednit.app.Model;
 public class RednitUserSingleton {
 
     public static RednitUserSingleton intance = new RednitUserSingleton();
+    private String facebookId = "0";
+    private String id = "0";
     private String name = "Isea Weaver";
     private String photoUrl = "https://fbcdn-sphotos-c-a.akamaihd.net/hphotos-ak-xpa1/v/t1.0-9/12227650_10205587203534851_6504001002331463838_n.jpg?oh=25879438ca96cb696538117703ad719a&oe=56EFDA46&__gda__=1458285392_15704eb827c39039edcecd7f0821ac94";
 
@@ -30,5 +32,21 @@ public class RednitUserSingleton {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    public String getFacebookId() {
+        return facebookId;
+    }
+
+    public void setFacebookId(String facebookId) {
+        this.facebookId = facebookId;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

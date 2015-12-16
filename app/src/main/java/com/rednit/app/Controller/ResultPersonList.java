@@ -1,5 +1,6 @@
 package com.rednit.app.Controller;
 
+import com.rednit.app.Model.RednitUserSingleton;
 import com.rednit.app.Model.ResultPerson;
 
 import org.json.JSONArray;

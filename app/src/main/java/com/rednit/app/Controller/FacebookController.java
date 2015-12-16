@@ -99,7 +99,7 @@ public class FacebookController {
 
     public void setupAccount(Profile profile, double[] location) throws JSONException, ParseException {
         account.setName(profile.getName());
-        account.setPhotoUrl(profile.getProfilePictureUri(20,20).toString());
+        account.setPhotoUrl(profile.getProfilePictureUri(200,200).toString());
         account.setLoc(location);
         FacebookAccount fba = new FacebookAccount();
         fba.setFacebookId(profile.getId());
@@ -108,17 +108,23 @@ public class FacebookController {
         Accounts accounts = new Accounts();
         accounts.setFacebookAccount(fba);
         account.setAccounts(accounts);
+        RednitUserSingleton.getInstance().setName(profile.getName());
+        RednitUserSingleton.getInstance().setPhotoUrl(profile.getProfilePictureUri(200,200).toString());
     }
 
-    public void postAccount(){
+    public String postAccount(){
         JSONParser jp = new JSONParser();
+        String id = null;
 
         try {
-            jp.POST(urlPostAccount, account.toJSON());
+           JSONObject jsonObject;
+            jsonObject = jp.POST(urlPostAccount, account.toJSON());
+            id = jsonObject.get("_id").toString();
             System.out.println("POST: json: "+account.toJSON().toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        return id;
     }
 
     public void simplifyLikes(){

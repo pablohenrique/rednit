@@ -1,5 +1,6 @@
 package com.rednit.app;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -29,7 +30,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.rednit.app.Controller.FacebookController;
 import com.rednit.app.Controller.MyLocation;
+import com.rednit.app.Model.RednitUserSingleton;
 import com.rednit.app.Model.TwitterAccount;
+import com.rednit.app.Util.SharedPrefs;
 import com.rednit.app.Util.Util;
 import com.rednit.app.View.ChatFragment;
 import com.rednit.app.View.HomeFragment;
@@ -61,6 +64,7 @@ public class MainActivity extends ActionBarActivity
         ResultListFragment.OnFragmentInteractionListener,
         HomeFragment.OnFragmentInteractionListener,
         ChatFragment.OnFragmentInteractionListener{
+    Context mContext;
 
     private Util utils;
 //    private TwitterLoginButton twitterLoginButton;
@@ -84,7 +88,7 @@ public class MainActivity extends ActionBarActivity
         FacebookSdk.sdkInitialize(MainActivity.this);
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
-
+        mContext = this;
         setContentView(R.layout.activity_main);
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
         FlowManager.init(this);
@@ -418,7 +422,18 @@ public class MainActivity extends ActionBarActivity
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                facebookController.postAccount();
+                String id = facebookController.postAccount();
+                if(id != null){
+                    SharedPrefs.setId(mContext, id);
+                    RednitUserSingleton.getInstance().setId(id);
+                } else{
+
+                    id = SharedPrefs.getId(mContext);
+                    RednitUserSingleton.getInstance().setId(id);
+                    System.out.println("PEGANDO AQUI: "+RednitUserSingleton.getInstance().getId());
+
+                }
+
 
             }
 
