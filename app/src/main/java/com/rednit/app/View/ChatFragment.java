@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.rednit.app.Controller.MessageAdapter;
 import com.rednit.app.Model.Message;
+import com.rednit.app.Model.RednitUserSingleton;
 import com.rednit.app.R;
 
 import org.json.JSONException;
@@ -108,8 +109,7 @@ public class ChatFragment extends Fragment{
 //        ((ImageView)getRootView().findViewById(R.id.chat_friend_avatar));
 
         Bundle bundle = this.getArguments();
-        ((TextView)rootView.findViewById(R.id.textView)).setText(bundle.getString("name"));
-
+        ((TextView)rootView.findViewById(R.id.textView)).setText(bundle.getString("friend"));
 
 //        try {
 //            mSocket = IO.socket("http://chat.socket.io");
@@ -330,7 +330,7 @@ public class ChatFragment extends Fragment{
 //
 //        // perform the user login attempt.
 //        mSocket.emit("add user", username);
-        mUsername = "JackU-12312312312312";
+        mUsername = RednitUserSingleton.getInstance().getName();
         mSocket.emit("add user", mUsername);
     }
 

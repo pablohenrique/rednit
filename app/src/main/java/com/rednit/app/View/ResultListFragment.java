@@ -103,6 +103,8 @@ public class ResultListFragment extends Fragment {
                     ChatFragment chatFragment = new ChatFragment();
                     Bundle bundle = new Bundle();
                     bundle.putString("user", RednitUserSingleton.getInstance().getName());
+                    bundle.putString("friend", Slecteditem.replace("Chat com: ","").replace("~",""));
+//                    bundle.putString("friendPhoto", );
                     bundle.putString("photo", RednitUserSingleton.getInstance().getPhotoUrl());
                     chatFragment.setArguments(bundle);
 
