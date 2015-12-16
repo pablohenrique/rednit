@@ -7,8 +7,24 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.rednit.app.Controller.DownloadImageTask;
+import com.rednit.app.Model.RednitUserSingleton;
 import com.rednit.app.R;
+import com.rednit.app.Util.CustomJSONArrayRequest;
+import com.rednit.app.Util.CustomVolleyRequestQueue;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 
 /**
@@ -19,7 +35,10 @@ import com.rednit.app.R;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment
+        extends Fragment
+        implements Response.Listener,
+        Response.ErrorListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 //    private static final String ARG_PARAM1 = "param1";
@@ -28,6 +47,11 @@ public class HomeFragment extends Fragment {
     // TODO: Rename and change types of parameters
 //    private String mParam1;
 //    private String mParam2;
+
+    private ImageView largeCircle;
+    private ImageView mediumCircle;
+    private ImageView smallCircle;
+    private RequestQueue mQueue;
 
     private OnFragmentInteractionListener mListener;
 
@@ -69,6 +93,26 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_home, container, false);
+        largeCircle = (ImageView) rootView.findViewById(R.id.home_img_large_circle);
+        mediumCircle = (ImageView) rootView.findViewById(R.id.home_img_medium_circle);
+        smallCircle = (ImageView) rootView.findViewById(R.id.home_img_small_circle);
+
+        animate(largeCircle, true);
+        animate(mediumCircle, true);
+        animate(smallCircle, true);
+
+        mQueue = CustomVolleyRequestQueue.prepareInstance(HomeFragment.this.getActivity()).getRequestQueue();
+        String url = "http://54.88.31.160:3000/api/accounts";
+//        CustomJSONObjectRequest jsonRequest = new CustomJSONObjectRequest(Request.Method.GET, url, new JSONObject(), HomeFragment.this, HomeFragment.this);
+        CustomJSONArrayRequest jsonRequest = new CustomJSONArrayRequest(Request.Method.GET, url, new JSONObject(), HomeFragment.this, HomeFragment.this);
+        jsonRequest.setTag(HomeFragment.this.getClass().getName());
+        mQueue.add(jsonRequest);
+
+        new DownloadImageTask((ImageView) rootView.findViewById(R.id.home_img_profile_circle) ).execute(RednitUserSingleton.getInstance().getPhotoUrl());
+
+//        JSONModel jsonModel = new JSONModel<FiwareContextJson>(new JSONObject(), FiwareContextJson.class);
+//        jsonModel.save();
+
         return rootView;
     }
 
@@ -96,6 +140,51 @@ public class HomeFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onErrorResponse(VolleyError error) {
+        Toast.makeText(HomeFragment.this.getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onResponse(Object response) {
+        try{
+//            if(response instanceof JSONObject){
+//                bundle.putString("jsonobject",((JSONObject)response).toString());
+//                bundle.putInt("index", 0);
+//            } else if(response instanceof JSONArray){
+//                bundle.putString("jsonarray",((JSONArray)response).toString());
+//                bundle.putInt("index",1);
+//            } else {
+//                bundle.putString("object",(response).toString());
+//                bundle.putInt("index",2);
+//            }
+            final ResultListFragment resultListFragment = new ResultListFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("jsonarray", ((JSONArray) response).toString());
+            resultListFragment.setArguments(bundle);
+
+//            Toast.makeText(HomeFragment.this.getActivity(), response.toString(), Toast.LENGTH_SHORT).show();
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(5000);
+                        getFragmentManager()
+                                .beginTransaction()
+                                .add(R.id.fragment_container, resultListFragment)
+                                .commit();
+                    } catch (Exception e) {
+                        e.getLocalizedMessage();
+                    }
+                }
+            }).run();
+
+        } catch (Exception ex){
+            Toast.makeText(HomeFragment.this.getActivity(), response.toString(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -109,6 +198,32 @@ public class HomeFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+    }
+
+    private void animate(final ImageView imageView, final boolean forever) {
+
+        Animation scaleDown = AnimationUtils.loadAnimation(HomeFragment.this.getActivity(), R.anim.scale_down);
+        Animation scaleUp = AnimationUtils.loadAnimation(HomeFragment.this.getActivity(), R.anim.scale_up);
+
+        AnimationSet animation = new AnimationSet(false); // change to false
+        animation.addAnimation(scaleDown);
+        animation.addAnimation(scaleUp);
+        animation.setRepeatCount(1);
+        imageView.setAnimation(animation);
+
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            public void onAnimationEnd(Animation animation) {
+                if (forever){
+                    animate(imageView, forever);  //Calls itself to start the animation all over again in a loop if forever = true
+                }
+            }
+            public void onAnimationRepeat(Animation animation) {
+                // TODO Auto-generated method stub
+            }
+            public void onAnimationStart(Animation animation) {
+                // TODO Auto-generated method stub
+            }
+        });
     }
 
 }

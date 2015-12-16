@@ -105,6 +105,18 @@ public class ChatFragment extends Fragment{
         mSocket.on("typing", onTyping);
         mSocket.on("stop typing", onStopTyping);
         mSocket.connect();
+//        ((ImageView)getRootView().findViewById(R.id.chat_friend_avatar));
+
+        Bundle bundle = this.getArguments();
+        ((TextView)rootView.findViewById(R.id.textView)).setText(bundle.getString("name"));
+
+
+//        try {
+//            mSocket = IO.socket("http://chat.socket.io");
+//            mSocket.connect();
+//        } catch (URISyntaxException e) {
+//            Toast.makeText(ChatFragment.this.getActivity(), "Chat not working.", Toast.LENGTH_SHORT).show();
+//        }
 
 
         startSignIn();

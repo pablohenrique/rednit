@@ -1,7 +1,7 @@
 .gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
+local.properties
+.idea/workspace.xml
+.idea/libraries
 
 *.DS_Store
 
@@ -37,3 +37,6 @@ proguard/
 
 # Android Studio captures folder
 captures/
+
+app/*.iml
+.idea/*
