@@ -64,13 +64,14 @@ dependencies {
     compile 'com.android.support:support-v4:22.1.1'
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.google.android.gms:play-services:6.5.87'
+    compile 'com.android.support:recyclerview-v7:+'
     compile 'com.mcxiaoke.volley:library:1.0.17'
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.facebook.android:facebook-android-sdk:4.1.0'
     apt 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
     compile 'com.raizlabs.android:DBFlow-Core:2.2.1'
     compile 'com.raizlabs.android:DBFlow:2.2.1'
-    //    compile 'com.github.nkzawa:socket.io-client:0.3.0'
+    compile 'com.github.nkzawa:socket.io-client:0.3.0'
     compile('io.socket:socket.io-client:0.6.1') {
         exclude group: 'org.json', module: 'json'
     }

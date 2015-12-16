@@ -169,7 +169,7 @@ public class HomeFragment
                 @Override
                 public void run() {
                     try {
-                        Thread.sleep(3000);
+                        Thread.sleep(5000);
                         getFragmentManager()
                                 .beginTransaction()
                                 .add(R.id.fragment_container, resultListFragment)
