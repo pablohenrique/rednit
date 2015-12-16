@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.rednit.app.Controller.CustomListAdapter;
 import com.rednit.app.Controller.ResultPersonList;
+import com.rednit.app.Model.RednitUserSingleton;
 import com.rednit.app.R;
 
 import org.json.JSONArray;
@@ -96,8 +97,19 @@ public class ResultListFragment extends Fragment {
                                         int position, long id) {
                     // TODO Auto-generated method stub
 //                String Slecteditem = itemname[+position];
-                    String Slecteditem = resultPersonList.getNames().get(+position);
+                    String Slecteditem = "Chat com: " + resultPersonList.getNames().get(+position);
                     Toast.makeText(ResultListFragment.this.getActivity().getApplicationContext(), Slecteditem, Toast.LENGTH_SHORT).show();
+
+                    ChatFragment chatFragment = new ChatFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("user", RednitUserSingleton.getInstance().getName());
+                    bundle.putString("photo", RednitUserSingleton.getInstance().getPhotoUrl());
+                    chatFragment.setArguments(bundle);
+
+                    getFragmentManager()
+                            .beginTransaction()
+                            .add(R.id.fragment_container, chatFragment)
+                            .commit();
 
                 }
             });

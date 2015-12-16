@@ -3,10 +3,13 @@ package com.rednit.app.View;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rednit.app.R;
@@ -43,8 +46,13 @@ public class ChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         setRootView(inflater.inflate(R.layout.fragment_chat, container, false));
+//        ((ImageView)getRootView().findViewById(R.id.chat_friend_avatar));
+
 
         try {
+            Bundle bundle = this.getArguments();
+            ((TextView)getRootView().findViewById(R.id.textView)).setText(bundle.getString("name"));
+
             mSocket = IO.socket("http://chat.socket.io");
             mSocket.connect();
         } catch (URISyntaxException e) {

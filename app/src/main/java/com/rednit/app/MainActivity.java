@@ -31,6 +31,7 @@ import com.rednit.app.Controller.FacebookController;
 import com.rednit.app.Controller.MyLocation;
 import com.rednit.app.Model.TwitterAccount;
 import com.rednit.app.Util.Util;
+import com.rednit.app.View.ChatFragment;
 import com.rednit.app.View.HomeFragment;
 import com.rednit.app.View.ResultListFragment;
 import com.twitter.sdk.android.Twitter;
@@ -58,7 +59,8 @@ public class MainActivity extends ActionBarActivity
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         ResultListFragment.OnFragmentInteractionListener,
-        HomeFragment.OnFragmentInteractionListener {
+        HomeFragment.OnFragmentInteractionListener,
+        ChatFragment.OnFragmentInteractionListener{
 
     private Util utils;
 //    private TwitterLoginButton twitterLoginButton;
