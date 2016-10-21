@@ -1,6 +1,6 @@
 # Rednit
 
-This is an **Android** application written in Java. The backend is not in this repo so, for that, checkout rednit-backend.
+This is an **Android** application written in Java. The backend is not in this repo so, for that, checkout [rednit-back](https://github.com/pablohpsilva/rednit-back).
 
 ## What it does?
 
